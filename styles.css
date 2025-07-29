@@ -20,91 +20,61 @@ body {
   background-color: var(--ig-primary-background);
   color: var(--ig-primary-text);
   line-height: 1.6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   font-size: 16px;
 }
-.hero {
+.app-container {
   text-align: center;
-  padding: 70px 20px;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
   background: var(--ig-elevated-background);
+  border-radius: 10px;
+  border: 1px solid var(--ig-elevated-separator);
 }
 h1 {
-  font-size: 2.5em;
+  font-size: 1.8em;
   color: var(--ig-primary-text);
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   font-weight: 700;
 }
 p {
-  font-size: 1.1em;
-  max-width: 700px;
-  margin: 0 auto 30px;
+  font-size: 1em;
   color: var(--ig-secondary-text);
+  margin-bottom: 20px;
 }
 .cta-button {
-  display: inline-block;
-  padding: 12px 40px;
+  padding: 12px 30px;
   background-color: var(--ig-primary-button);
   color: var(--ig-primary-text);
-  text-decoration: none;
+  border: none;
   border-radius: 6px;
   font-size: 1em;
   font-weight: 500;
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 .cta-button:hover {
   background-color: var(--ig-primary-button-hover);
 }
-.trust-signals {
-  margin-top: 25px;
+.status {
+  margin-top: 20px;
   font-size: 0.9em;
-  color: var(--ig-secondary-text);
-}
-.features, .how-it-works {
-  padding: 70px 20px;
-  text-align: center;
-  background: var(--ig-primary-background);
-}
-h2 {
-  font-size: 2em;
-  color: var(--ig-primary-text);
-  margin-bottom: 40px;
-  font-weight: 700;
-}
-.feature-grid, .steps {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 25px;
-}
-.feature-card, .step {
-  background: var(--ig-elevated-background);
-  padding: 20px;
-  border: 1px solid var(--ig-elevated-separator);
-  border-radius: 8px;
-  max-width: 260px;
-  text-align: center;
-}
-.feature-card h3, .step h3 {
   color: var(--ig-secondary-accent);
-  font-size: 1.3em;
-  margin-bottom: 10px;
-  font-weight: 500;
 }
-.feature-card p, .step p {
-  font-size: 0.95em;
-  color: var(--ig-secondary-text);
-}
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   h1 {
-    font-size: 1.8em;
+    font-size: 1.5em;
   }
-  h2 {
-    font-size: 1.6em;
+  .app-container {
+    padding: 15px;
+    max-width: 90%;
   }
-  .feature-card, .step {
-    max-width: 100%;
-    margin: 0 10px;
-  }
-  .hero, .features, .how-it-works {
-    padding: 40px 15px;
+  .cta-button {
+    padding: 10px 25px;
+    font-size: 0.95em;
   }
 }
