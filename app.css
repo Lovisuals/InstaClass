@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+:root {
+  --ig-primary-background: #000000;
+  --ig-elevated-background: #262626;
+  --ig-primary-text: #F5F5F5;
+  --ig-secondary-text: #A8A8A8;
+  --ig-primary-button: #C13584;
+  --ig-primary-button-hover: #A12C6F;
+  --ig-secondary-accent: #FF9933;
+  --ig-elevated-separator: #262626;
+  --ig-hover-overlay: rgba(255, 255, 255, 0.1);
+  --font-family-system: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  font-family: var(--font-family-system);
+  margin: 0;
+  padding: 0;
+  background-color: var(--ig-primary-background);
+  color: var(--ig-primary-text);
+  line-height: 1.6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 16px;
+}
+.app-container {
+  text-align: center;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  background: var(--ig-elevated-background);
+  border-radius: 10px;
+  border: 1px solid var(--ig-elevated-separator);
+}
+h1 {
+  font-size: 1.8em;
+  color: var(--ig-primary-text);
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+p {
+  font-size: 1em;
+  color: var(--ig-secondary-text);
+  margin-bottom: 20px;
+}
+.cta-button {
+  padding: 12px 30px;
+  background-color: var(--ig-primary-button);
+  color: var(--ig-primary-text);
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.cta-button:hover {
+  background-color: var(--ig-primary-button-hover);
+}
+.status {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: var(--ig-secondary-accent);
+}
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5em;
+  }
+  .app-container {
+    padding: 15px;
+    max-width: 90%;
+  }
+  .cta-button {
+    padding: 10px 25px;
+    font-size: 0.95em;
+  }
+}
