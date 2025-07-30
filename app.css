@@ -1,3 +1,4 @@
+/* C:\Users\CLOUD9\Documents\AgentX\InstaClass-Project\app.css */
 :root {
   --ig-primary-gradient: linear-gradient(45deg, #C13584, #FF9933);
   --ig-primary-button-hover: #A12C6F;
@@ -55,79 +56,90 @@ p {
   margin-bottom: 20px;
 }
 
-.plan-selection {
+.dashboard-grid {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.plan-card {
-  display: flex;
-  align-items: center;
-  background-color: #333;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.3s;
-}
-
-.plan-card:hover {
-  transform: scale(1.02);
-  background-color: #444;
-}
-
-.plan-card input {
-  margin-right: 10px;
-}
-
-.plan-card span {
-  color: var(--text-primary);
-  font-size: 14px;
-}
-
-#trialButton {
+.dashboard-button {
   background: var(--ig-primary-gradient);
   color: var(--text-primary);
   border: none;
-  padding: 12px 20px;
+  padding: 12px;
   border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   width: 100%;
-  max-width: 180px;
+  transition: transform 0.2s, background-color 0.3s;
+}
+
+.dashboard-button:hover {
+  transform: scale(1.02);
+  background: var(--ig-primary-button-hover);
+}
+
+#whiteboard-container {
+  margin-top: 20px;
+}
+
+#whiteboard {
+  background-color: white;
+  border: 2px solid var(--ig-secondary-text);
+  border-radius: 8px;
+  width: 340px;
+  height: 400px;
+}
+
+.whiteboard-tools {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tool-button {
+  background: var(--ig-primary-gradient);
+  color: var(--text-primary);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
   transition: transform 0.2s;
 }
 
-#trialButton:hover {
+.tool-button:hover {
   transform: scale(1.05);
-}
-
-#status {
-  color: var(--ig-secondary-text);
-  font-size: 14px;
-  margin-top: 20px;
 }
 
 @media (max-width: 414px) {
   .container {
-      padding: 15px;
-      margin: 8px;
-      max-width: 90vw;
+    padding: 15px;
+    margin: 8px;
+    max-width: 90vw;
   }
 
   h1 {
-      font-size: 20px;
+    font-size: 20px;
   }
 
-  p, #status, .plan-card span {
-      font-size: 13px;
+  p, .dashboard-button, .tool-button {
+    font-size: 13px;
   }
 
-  #trialButton {
-      padding: 10px 16px;
-      font-size: 13px;
-      max-width: 160px;
+  .dashboard-button {
+    padding: 10px;
+  }
+
+  .tool-button {
+    padding: 6px 10px;
+  }
+
+  #whiteboard {
+    width: 100%;
+    max-width: 340px;
   }
 }

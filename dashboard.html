@@ -1,0 +1,30 @@
+<!-- C:\Users\CLOUD9\Documents\AgentX\InstaClass-Project\dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InstaClass Dashboard</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="container">
+    <h1>InstaClass Educator Dashboard</h1>
+    <div class="dashboard-grid">
+      <button id="start-livestream" onclick="startLivestream()">Start Livestream</button>
+      <button id="view-history" onclick="viewChatHistory()">View Chat History</button>
+      <button id="open-whiteboard" onclick="openWhiteboard()">Open Whiteboard</button>
+      <div id="whiteboard-container" style="display: none;">
+        <canvas id="whiteboard" width="360" height="400"></canvas>
+        <div class="whiteboard-tools">
+          <button onclick="setColor('black')">Black</button>
+          <button onclick="setColor('red')">Red</button>
+          <button onclick="clearWhiteboard()">Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
