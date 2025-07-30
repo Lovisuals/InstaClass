@@ -15,8 +15,8 @@
       <button class="dashboard-button" id="start-livestream" onclick="startLivestream()">Start Livestream</button>
       <button class="dashboard-button" id="view-history" onclick="viewChatHistory()">View Chat History</button>
       <button class="dashboard-button" id="open-whiteboard" onclick="openWhiteboard()">Open Whiteboard</button>
-      <div id="whiteboard-container" style="display: none;">
-        <canvas id="whiteboard" width="340" height="400"></canvas>
+      <div id="whiteboard-container" class="whiteboard-hidden">
+        <canvas id="whiteboard" width="340" height="400" aria-label="Interactive whiteboard for drawing"></canvas>
         <div class="whiteboard-tools">
           <button class="tool-button" onclick="setColor('black')">Black</button>
           <button class="tool-button" onclick="setColor('red')">Red</button>
@@ -26,8 +26,10 @@
     </div>
     <div class="schedule-form">
       <h2>Schedule a Live Lecture</h2>
-      <input id="lecture-topic" type="text" placeholder="Lecture Topic (e.g., English Grammar)">
-      <input id="lecture-time" type="datetime-local">
+      <label for="lecture-topic">Lecture Topic</label>
+      <input id="lecture-topic" type="text" placeholder="Enter topic (e.g., English Grammar)" aria-label="Lecture topic">
+      <label for="lecture-time">Lecture Time</label>
+      <input id="lecture-time" type="datetime-local" placeholder="Select date and time" aria-label="Lecture date and time">
       <button class="dashboard-button" id="schedule-lecture">Schedule Lecture</button>
       <p id="schedule-status">Ready to schedule...</p>
     </div>
