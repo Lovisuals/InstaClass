@@ -2,12 +2,18 @@
 const Telegram = window.Telegram.WebApp;
 Telegram.expand();
 
-// Simulate Free Trial access (replace with database check later)
-if (Telegram.WebApp.initDataUnsafe.user) {
+function goToDashboard() {
   const userPlan = 'Free Trial'; // Hardcoded for now
   if (userPlan === 'Free Trial') {
+    document.getElementById('status').innerText = 'Redirecting to dashboard...';
     window.location.href = 'dashboard.html';
   } else {
     Telegram.showAlert('Please select a plan to access the dashboard.');
+    document.getElementById('status').innerText = 'Plan selection required.';
   }
+}
+
+// Optional: Auto-redirect for testing
+if (Telegram.WebApp.initDataUnsafe.user) {
+  goToDashboard();
 }

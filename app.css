@@ -56,7 +56,7 @@ p {
   margin-bottom: 20px;
 }
 
-.dashboard-grid {
+.plan-selection, .dashboard-grid {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -79,6 +79,12 @@ p {
 .dashboard-button:hover {
   transform: scale(1.02);
   background: var(--ig-primary-button-hover);
+}
+
+#status {
+  color: var(--ig-secondary-text);
+  font-size: 14px;
+  margin-top: 20px;
 }
 
 #whiteboard-container {
@@ -126,7 +132,7 @@ p {
     font-size: 20px;
   }
 
-  p, .dashboard-button, .tool-button {
+  p, .dashboard-button, .tool-button, #status {
     font-size: 13px;
   }
 
