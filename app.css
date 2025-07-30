@@ -1,80 +1,94 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
 :root {
-  --ig-primary-background: #000000;
-  --ig-elevated-background: #262626;
-  --ig-primary-text: #F5F5F5;
-  --ig-secondary-text: #A8A8A8;
   --ig-primary-button: #C13584;
   --ig-primary-button-hover: #A12C6F;
-  --ig-secondary-accent: #FF9933;
-  --ig-elevated-separator: #262626;
-  --ig-hover-overlay: rgba(255, 255, 255, 0.1);
-  --font-family-system: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --ig-secondary-text: #FF9933;
+  --background: #000000;
+  --container-bg: #262626;
+  --text-primary: #F5F5F5;
+  --text-secondary: #A8A8A8;
 }
 
-body {
-  font-family: var(--font-family-system);
+* {
   margin: 0;
   padding: 0;
-  background-color: var(--ig-primary-background);
-  color: var(--ig-primary-text);
-  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background-color: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  font-size: 16px;
+  overflow: auto;
 }
-.app-container {
+
+.container {
+  background-color: var(--container-bg);
+  padding: 16px;
+  border-radius: 12px;
   text-align: center;
-  padding: 20px;
-  max-width: 400px;
   width: 100%;
-  background: var(--ig-elevated-background);
-  border-radius: 10px;
-  border: 1px solid var(--ig-elevated-separator);
+  max-width: 360px;
+  margin: 10px;
+  box-sizing: border-box;
 }
+
 h1 {
-  font-size: 1.8em;
-  color: var(--ig-primary-text);
-  margin-bottom: 15px;
-  font-weight: 700;
+  font-size: 20px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
 }
+
 p {
-  font-size: 1em;
-  color: var(--ig-secondary-text);
-  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
 }
-.cta-button {
-  padding: 12px 30px;
+
+#trialButton {
   background-color: var(--ig-primary-button);
-  color: var(--ig-primary-text);
+  color: var(--text-primary);
   border: none;
-  border-radius: 6px;
-  font-size: 1em;
-  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
+  width: 100%;
+  max-width: 180px;
 }
-.cta-button:hover {
+
+#trialButton:hover {
   background-color: var(--ig-primary-button-hover);
 }
-.status {
-  margin-top: 20px;
-  font-size: 0.9em;
-  color: var(--ig-secondary-accent);
+
+#status {
+  color: var(--ig-secondary-text);
+  font-size: 14px;
+  margin-top: 16px;
 }
-@media (max-width: 480px) {
+
+@media (max-width: 414px) {
+  .container {
+      padding: 12px;
+      margin: 8px;
+      max-width: 90vw;
+  }
+
   h1 {
-    font-size: 1.5em;
+      font-size: 18px;
   }
-  .app-container {
-    padding: 15px;
-    max-width: 90%;
+
+  p, #status {
+      font-size: 13px;
   }
-  .cta-button {
-    padding: 10px 25px;
-    font-size: 0.95em;
+
+  #trialButton {
+      padding: 8px 16px;
+      font-size: 13px;
+      max-width: 160px;
   }
 }
