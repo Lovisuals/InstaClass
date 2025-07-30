@@ -1,6 +1,6 @@
 // C:\Users\CLOUD9\Documents\AgentX\InstaClass-Project\dashboard.js
 const Telegram = window.Telegram.WebApp;
-Telegram.expand(); // Maximize viewport on load
+Telegram.expand();
 
 function startLivestream() {
   Telegram.showAlert('Livestream feature coming soon!');
