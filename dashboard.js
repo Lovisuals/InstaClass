@@ -3,21 +3,26 @@ const Telegram = window.Telegram.WebApp;
 Telegram.expand();
 
 function startLivestream() {
-  Telegram.showAlert('Livestream feature coming soon!');
+  Telegram.WebApp.sendData(JSON.stringify({ action: 'start_livestream' }));
+  Telegram.showAlert('Livestream request sent!');
 }
 
 function viewChatHistory() {
-  Telegram.showAlert('Chat history feature coming soon!');
+  Telegram.WebApp.sendData(JSON.stringify({ action: 'view_chat_history' }));
+  Telegram.showAlert('Chat history request sent!');
 }
 
 function openWhiteboard() {
-  Telegram.showAlert('Whiteboard feature coming soon!');
+  Telegram.WebApp.sendData(JSON.stringify({ action: 'open_whiteboard' }));
+  Telegram.showAlert('Whiteboard request sent!');
 }
 
 function setColor(color) {
-  Telegram.showAlert('Whiteboard color selection coming soon!');
+  Telegram.WebApp.sendData(JSON.stringify({ action: 'set_whiteboard_color', color }));
+  Telegram.showAlert(`Color ${color} selected!`);
 }
 
 function clearWhiteboard() {
-  Telegram.showAlert('Whiteboard clear feature coming soon!');
+  Telegram.WebApp.sendData(JSON.stringify({ action: 'clear_whiteboard' }));
+  Telegram.showAlert('Whiteboard cleared!');
 }
