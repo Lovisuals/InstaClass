@@ -1,4 +1,3 @@
-// C:\Users\CLOUD9\Documents\AgentX\InstaClass-Project\dashboard.js
 const Telegram = window.Telegram.WebApp;
 Telegram.expand();
 
@@ -26,3 +25,16 @@ function clearWhiteboard() {
   Telegram.WebApp.sendData(JSON.stringify({ action: 'clear_whiteboard' }));
   Telegram.showAlert('Whiteboard cleared!');
 }
+
+document.getElementById('schedule-lecture').addEventListener('click', () => {
+  const topic = document.getElementById('lecture-topic').value;
+  const time = document.getElementById('lecture-time').value;
+  if (topic && time) {
+    Telegram.WebApp.sendData(JSON.stringify({ action: 'schedule_lecture', topic, time }));
+    Telegram.WebApp.showAlert('Lecture scheduled successfully!');
+    document.getElementById('schedule-status').innerText = 'Lecture scheduled!';
+  } else {
+    Telegram.WebApp.showAlert('Please enter topic and time.');
+    document.getElementById('schedule-status').innerText = 'Missing topic or time.';
+  }
+});
