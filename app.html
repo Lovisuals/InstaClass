@@ -1,4 +1,3 @@
-<!-- C:\Users\CLOUD9\Documents\AgentX\InstaClass-Project\app.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,8 +15,15 @@
       <button class="dashboard-button" onclick="goToDashboard()">Go to Dashboard (Free Trial)</button>
     </div>
     <p id="status">Loading...</p>
+    <p id="error" style="display: none; color: red;">Please open this app in Telegram.</p>
   </div>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    if (!window.Telegram.WebApp) {
+      document.getElementById('status').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+    }
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

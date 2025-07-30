@@ -13,14 +13,17 @@
     <p>Welcome, Educator! Manage your classes here.</p>
     <div class="dashboard-grid">
       <button class="dashboard-button" id="start-livestream" onclick="startLivestream()">Start Livestream</button>
-      <button class="dashboard-button" id="view-history" onclick="viewChatHistory()">View Chat History</button>
-      <button class="dashboard-button" id="open-whiteboard" onclick="openWhiteboard()">Open Whiteboard</button>
+      <button class="dashboard-button" id="寻0;view-history" onclick="viewChatHistory()">View Chat History</button>
+      <button class="dashboard-button" id="open-whiteboard" onclick="toggleWhiteboard()">Open/Close Whiteboard</button>
+      <button class="dashboard-button" id="chat-assistant" onclick="window.open('https://t.me/InstaClassAssistantBot', '_blank')">Chat with Assistant</button>
       <div id="whiteboard-container" class="whiteboard-hidden">
-        <canvas id="whiteboard" width="340" height="400" aria-label="Interactive whiteboard for drawing"></canvas>
+        <canvas id="whiteboard" width="600" height="400" aria-label="Interactive whiteboard for drawing"></canvas>
         <div class="whiteboard-tools">
           <button class="tool-button" onclick="setColor('black')">Black</button>
           <button class="tool-button" onclick="setColor('red')">Red</button>
+          <button class="tool-button" onclick="setColor('blue')">Blue</button>
           <button class="tool-button" onclick="clearWhiteboard()">Clear</button>
+          <button class="tool-button" onclick="saveWhiteboard()">Save</button>
         </div>
       </div>
     </div>

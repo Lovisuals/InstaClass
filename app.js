@@ -1,4 +1,3 @@
-// C:\Users\CLOUD9\Documents\AgentX\InstaClass-Project\app.js
 const Telegram = window.Telegram.WebApp;
 Telegram.expand();
 
@@ -13,7 +12,7 @@ function goToDashboard() {
   }
 }
 
-// Optional: Auto-redirect for testing
+// Auto-redirect for testing
 if (Telegram.WebApp.initDataUnsafe.user) {
   goToDashboard();
 }
