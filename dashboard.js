@@ -6,7 +6,7 @@ const canvas = document.getElementById('whiteboard');
 const ctx = canvas.getContext('2d');
 let drawing = false;
 let currentColor = 'black';
-let currentStickyColor = '#fff3cd'; // Default yellow
+let currentStickyColor = '#fff3cd';
 let ws;
 let textInput = document.getElementById('text-input');
 let frameSelect = document.getElementById('frame-size');
@@ -14,12 +14,13 @@ let templateSelect = document.getElementById('template-select');
 let stickyColorSelect = document.getElementById('sticky-color');
 let textX, textY;
 let stickyNotes = [];
+let selectedStickyNote = null;
 
 // Initialize landscape canvas
 function initCanvas() {
   const container = document.getElementById('whiteboard-container');
-  const maxWidth = container.offsetWidth - 20;
-  const maxHeight = window.innerHeight * 0.6;
+  const maxWidth = container.offsetWidth - 16; // Padding
+  const maxHeight = container.offsetHeight - 100; // Controls and textarea
   let width, height;
 
   switch (frameSelect.value) {
@@ -27,14 +28,14 @@ function initCanvas() {
     case 'iphone':
     case 'pc':
     case 'youtube':
-      width = Math.min(maxWidth, 800);
+      width = Math.min(maxWidth, 1280); // Wider for full-screen
       height = width * (9 / 16);
       break;
     case 'instagram':
-      width = Math.min(maxWidth, 600);
+      width = Math.min(maxWidth, 800);
       height = width;
       break;
-    default:
+    default: // responsive
       width = maxWidth;
       height = width * (9 / 16);
       if (height > maxHeight) {
@@ -210,7 +211,7 @@ function placeText() {
 
 // Add sticky note
 function addStickyNote(x = 50, y = 50, text = 'New Note', color = currentStickyColor, broadcast = true) {
-  const noteId = Date.now() + Math.random(); // Unique ID
+  const noteId = Date.now() + Math.random();
   const note = document.createElement('div');
   note.className = 'sticky-note';
   note.style.background = color;
@@ -240,33 +241,49 @@ function addStickyNote(x = 50, y = 50, text = 'New Note', color = currentStickyC
   document.body.appendChild(note);
   stickyNotes.push({ id: noteId, element: note, x, y, color });
 
+  // Select sticky note
+  note.addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectStickyNote(noteId);
+  });
+
   // Drag functionality
   let isDragging = false;
   let offsetX, offsetY;
   header.addEventListener('mousedown', (e) => {
+    e.stopPropagation();
+    selectStickyNote(noteId);
     isDragging = true;
     offsetX = e.clientX - note.offsetLeft;
     offsetY = e.clientY - note.offsetTop;
   });
   header.addEventListener('touchstart', (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    selectStickyNote(noteId);
     isDragging = true;
     const touch = e.touches[0];
     offsetX = touch.clientX - note.offsetLeft;
     offsetY = touch.clientY - note.offsetTop;
   }, { passive: false });
   document.addEventListener('mousemove', (e) => {
-    if (isDragging) {
+    if (isDragging && selectedStickyNote === noteId) {
       note.style.left = `${Math.min(Math.max(e.clientX - offsetX, 0), canvas.width - 100)}px`;
       note.style.top = `${Math.min(Math.max(e.clientY - offsetY, 0), canvas.height - 100)}px`;
+      const noteData = stickyNotes.find(n => n.id === noteId);
+      noteData.x = parseFloat(note.style.left);
+      noteData.y = parseFloat(note.style.top);
     }
   });
   document.addEventListener('touchmove', (e) => {
-    if (isDragging) {
+    if (isDragging && selectedStickyNote === noteId) {
       e.preventDefault();
       const touch = e.touches[0];
       note.style.left = `${Math.min(Math.max(touch.clientX - offsetX, 0), canvas.width - 100)}px`;
       note.style.top = `${Math.min(Math.max(touch.clientY - offsetY, 0), canvas.height - 100)}px`;
+      const noteData = stickyNotes.find(n => n.id === noteId);
+      noteData.x = parseFloat(note.style.left);
+      noteData.y = parseFloat(note.style.top);
     }
   }, { passive: false });
   document.addEventListener('mouseup', () => isDragging = false);
@@ -281,6 +298,32 @@ function addStickyNote(x = 50, y = 50, text = 'New Note', color = currentStickyC
   Telegram.WebApp.showAlert('Sticky note added!');
 }
 
+// Select sticky note
+function selectStickyNote(id) {
+  stickyNotes.forEach(note => note.element.classList.remove('selected'));
+  const note = stickyNotes.find(n => n.id === id);
+  if (note) {
+    note.element.classList.add('selected');
+    selectedStickyNote = id;
+    Telegram.WebApp.showAlert('Sticky note selected! Press Delete to remove or drag to move.');
+  }
+}
+
+// Deselect sticky note
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.sticky-note')) {
+    stickyNotes.forEach(note => note.element.classList.remove('selected'));
+    selectedStickyNote = null;
+  }
+});
+
+// Keyboard deletion
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Delete' && selectedStickyNote) {
+    removeStickyNote(selectedStickyNote);
+  }
+});
+
 // Remove sticky note
 function removeStickyNote(id) {
   const note = stickyNotes.find(n => n.id === id);
@@ -290,6 +333,7 @@ function removeStickyNote(id) {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ type: 'remove_sticky', id }));
     }
+    selectedStickyNote = null;
     Telegram.WebApp.showAlert('Sticky note removed!');
   }
 }
@@ -298,6 +342,7 @@ function removeStickyNote(id) {
 function removeAllStickyNotes() {
   stickyNotes.forEach(note => note.element.remove());
   stickyNotes = [];
+  selectedStickyNote = null;
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({ type: 'remove_all_sticky' }));
   }
@@ -315,7 +360,7 @@ function darkenColor(hex) {
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
 
-// Mock web search (replace with actual API in production)
+// Mock web search
 function performWebSearch() {
   const query = document.getElementById('web-search').value.trim();
   if (!query) {
@@ -326,7 +371,6 @@ function performWebSearch() {
   resultsDiv.classList.remove('search-results-hidden');
   resultsDiv.innerHTML = '';
 
-  // Mock search results
   const mockResults = [
     { title: `Result 1 for "${query}"`, url: `https://example.com/?q=${encodeURIComponent(query)}` },
     { title: `Result 2 for "${query}"`, url: `https://example.org/?q=${encodeURIComponent(query)}` },
@@ -443,6 +487,7 @@ function clearWhiteboard() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   stickyNotes.forEach(note => note.element.remove());
   stickyNotes = [];
+  selectedStickyNote = null;
   applyTemplate();
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({ type: 'clear' }));
