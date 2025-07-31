@@ -95,12 +95,21 @@ label {
   background: #ffffff; /* White for whiteboard container */
 }
 
+.whiteboard-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
 #whiteboard {
   border: 2px solid #555;
   border-radius: 5px;
   background: #ffffff; /* White canvas */
   width: 100%;
-  max-width: 800px;
+  max-width: 90vw; /* Responsive, like movie playback */
+  height: auto; /* Aspect ratio handled in JS */
   touch-action: none; /* Prevent default touch actions */
 }
 
@@ -132,4 +141,17 @@ label {
   margin: 10px auto;
   resize: none;
   height: 40px;
+}
+
+.sticky-note {
+  position: absolute;
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  padding: 5px;
+  width: 100px;
+  height: 100px;
+  resize: none;
+  font-size: 12px;
+  font-family: 'Poppins', sans-serif;
+  cursor: move;
 }

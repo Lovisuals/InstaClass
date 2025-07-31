@@ -9,38 +9,49 @@ let currentColor = 'black';
 let ws;
 let textInput = document.getElementById('text-input');
 let frameSelect = document.getElementById('frame-size');
+let templateSelect = document.getElementById('template-select');
 let textX, textY;
+let stickyNotes = [];
 
-// Initialize canvas with selected frame size
+// Initialize canvas with adaptive sizing
 function initCanvas() {
   const container = document.getElementById('whiteboard-container');
   const maxWidth = container.offsetWidth - 20; // Account for padding
+  const maxHeight = Math.min(window.innerHeight * 0.6, 600); // 60vh or max 600px
   let width, height;
 
   switch (frameSelect.value) {
     case 'android':
     case 'iphone':
-      width = Math.min(maxWidth, 360); // Typical mobile width
-      height = width * (16 / 9); // 9:16 aspect ratio
+      width = Math.min(maxWidth, 360); // Mobile width
+      height = width * (16 / 9); // 9:16
       break;
     case 'pc':
     case 'youtube':
-      width = Math.min(maxWidth, 800); // Typical widescreen
-      height = width * (9 / 16); // 16:9 aspect ratio
+      width = Math.min(maxWidth, 800); // Widescreen
+      height = width * (9 / 16); // 16:9
       break;
     case 'instagram':
       width = Math.min(maxWidth, 600); // Square
-      height = width; // 1:1 aspect ratio
+      height = width; // 1:1
       break;
     default: // responsive
       width = maxWidth;
-      height = Math.min(window.innerHeight * 0.6, 600); // 60vh or max 600px
+      height = maxHeight;
   }
 
+  // Scale canvas to fit device screen
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = height * (width / height); // Maintain aspect ratio
+  }
   canvas.width = width;
   canvas.height = height;
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  applyTemplate(); // Apply selected template
 }
 initCanvas();
 
@@ -49,6 +60,7 @@ window.addEventListener('resize', () => {
   const temp = ctx.getImageData(0, 0, canvas.width, canvas.height);
   initCanvas();
   ctx.putImageData(temp, 0, 0);
+  stickyNotes.forEach(note => document.body.appendChild(note.element));
 });
 
 // Set frame size
@@ -57,6 +69,30 @@ function setFrameSize() {
   initCanvas();
   ctx.putImageData(temp, 0, 0);
   Telegram.WebApp.showAlert(`Frame size set to ${frameSelect.value}!`);
+}
+
+// Apply template
+function applyTemplate() {
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (templateSelect.value === 'grid') {
+    ctx.strokeStyle = '#cccccc';
+    ctx.lineWidth = 1;
+    const gridSize = 20;
+    for (let x = 0; x < canvas.width; x += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+      ctx.stroke();
+    }
+    for (let y = 0; y < canvas.height; y += gridSize) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+      ctx.stroke();
+    }
+  }
+  Telegram.WebApp.showAlert(`Template set to ${templateSelect.value}!`);
 }
 
 // Initialize WebSocket
@@ -78,10 +114,13 @@ function connectWebSocket() {
     } else if (data.type === 'clear') {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      applyTemplate();
     } else if (data.type === 'text') {
       ctx.font = '16px Poppins';
       ctx.fillStyle = data.color;
       wrapText(data.text, data.x, data.y);
+    } else if (data.type === 'sticky') {
+      addStickyNote(data.x, data.y, data.text, false);
     }
   };
   ws.onerror = () => {
@@ -93,14 +132,13 @@ function connectWebSocket() {
     setTimeout(connectWebSocket, 1000);
   };
 }
-
 connectWebSocket();
 
 // Wrap text to fit canvas
 function wrapText(text, x, y) {
   ctx.font = '16px Poppins';
   const maxWidth = canvas.width - x - 10; // 10px padding
-  const lineHeight = 20; // Approximate line height
+  const lineHeight = 20;
   let words = text.split(' ');
   let line = '';
   let currentY = y;
@@ -119,6 +157,7 @@ function wrapText(text, x, y) {
       line = words[i] + ' ';
       currentY += lineHeight;
       if (currentY > canvas.height - 10) {
+        ctx.fillText('...', x, currentY);
         Telegram.WebApp.showAlert('Text truncated to fit canvas.');
         return;
       }
@@ -133,7 +172,7 @@ function wrapText(text, x, y) {
 function placeText() {
   const text = textInput.value.trim();
   if (text && textX && textY) {
-    const adjustedX = Math.min(textX, canvas.width - 10); // 10px padding
+    const adjustedX = Math.min(textX, canvas.width - 10);
     if (adjustedX < 0 || textY > canvas.height - 10) {
       Telegram.WebApp.showAlert('Text cannot be placed outside canvas boundaries.');
       return;
@@ -148,7 +187,58 @@ function placeText() {
   }
 }
 
+// Add sticky note
+function addStickyNote(x = 50, y = 50, text = 'New Note', broadcast = true) {
+  const note = document.createElement('textarea');
+  note.className = 'sticky-note';
+  note.style.left = `${x}px`;
+  note.style.top = `${y}px`;
+  note.value = text;
+  document.body.appendChild(note);
+  stickyNotes.push({ element: note, x, y });
+
+  // Drag functionality
+  let isDragging = false;
+  let offsetX, offsetY;
+  note.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - note.offsetLeft;
+    offsetY = e.clientY - note.offsetTop;
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      note.style.left = `${e.clientX - offsetX}px`;
+      note.style.top = `${e.clientY - offsetY}px`;
+    }
+  });
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  // Broadcast sticky note
+  if (broadcast && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'sticky', x, y, text }));
+  }
+  Telegram.WebApp.showAlert('Sticky note added!');
+}
+
+// Basic shape recognition
+function recognizeShape(points) {
+  if (points.length < 10) return null;
+  const dx = points[points.length - 1].x - points[0].x;
+  const dy = points[points.length - 1].y - points[0].y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  if (distance < 10) { // Likely a circle
+    const centerX = (points[0].x + points[points.length - 1].x) / 2;
+    const centerY = (points[0].y + points[points.length - 1].y) / 2;
+    const radius = Math.max(...points.map(p => Math.sqrt((p.x - centerX) ** 2 + (p.y - centerY) ** 2)));
+    return { type: 'circle', x: centerX, y: centerY, radius };
+  }
+  return null;
+}
+
 // Mouse events
+let drawPoints = [];
 canvas.addEventListener('mousedown', (e) => {
   const rect = canvas.getBoundingClientRect();
   if (textInput.value.trim()) {
@@ -157,6 +247,7 @@ canvas.addEventListener('mousedown', (e) => {
     placeText();
   } else {
     drawing = true;
+    drawPoints = [{ x: e.clientX - rect.left, y: e.clientY - rect.top }];
     ctx.beginPath();
     ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
   }
@@ -165,27 +256,38 @@ canvas.addEventListener('mousedown', (e) => {
 canvas.addEventListener('mousemove', (e) => {
   if (drawing) {
     const rect = canvas.getBoundingClientRect();
-    const startX = e.clientX - rect.left;
-    const startY = e.clientY - rect.top;
-    const endX = startX + 1;
-    const endY = startY + 1;
-    ctx.lineTo(endX, endY);
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    drawPoints.push({ x, y });
+    ctx.lineTo(x, y);
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = 2;
     ctx.stroke();
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'draw', startX, startY, endX, endY, color: currentColor }));
+      ws.send(JSON.stringify({ type: 'draw', startX: x - 1, startY: y - 1, endX: x, endY: y, color: currentColor }));
     }
   }
 });
 
 canvas.addEventListener('mouseup', () => {
+  if (drawing) {
+    const shape = recognizeShape(drawPoints);
+    if (shape && shape.type === 'circle') {
+      ctx.beginPath();
+      ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
   drawing = false;
+  drawPoints = [];
   ctx.closePath();
 });
 
 canvas.addEventListener('mouseout', () => {
   drawing = false;
+  drawPoints = [];
   ctx.closePath();
 });
 
@@ -200,6 +302,7 @@ canvas.addEventListener('touchstart', (e) => {
     placeText();
   } else {
     drawing = true;
+    drawPoints = [{ x: touch.clientX - rect.left, y: touch.clientY - rect.top }];
     ctx.beginPath();
     ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
   }
@@ -210,30 +313,40 @@ canvas.addEventListener('touchmove', (e) => {
   if (drawing) {
     const touch = e.touches[0];
     const rect = canvas.getBoundingClientRect();
-    const startX = touch.clientX - rect.left;
-    const startY = touch.clientY - rect.top;
-    const endX = startX + 1;
-    const endY = startY + 1;
-    ctx.lineTo(endX, endY);
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    drawPoints.push({ x, y });
+    ctx.lineTo(x, y);
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = 2;
     ctx.stroke();
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'draw', startX, startY, endX, endY, color: currentColor }));
+      ws.send(JSON.stringify({ type: 'draw', startX: x - 1, startY: y - 1, endX: x, endY: y, color: currentColor }));
     }
   }
 }, { passive: false });
 
 canvas.addEventListener('touchend', (e) => {
   e.preventDefault();
+  if (drawing) {
+    const shape = recognizeShape(drawPoints);
+    if (shape && shape.type === 'circle') {
+      ctx.beginPath();
+      ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
   drawing = false;
+  drawPoints = [];
   ctx.closePath();
 }, { passive: false });
 
 function toggleWhiteboard() {
   const container = document.getElementById('whiteboard-container');
   container.classList.toggle('whiteboard-hidden');
-  initCanvas(); // Re-init canvas size
+  initCanvas();
   Telegram.WebApp.showAlert('Whiteboard toggled!');
 }
 
@@ -246,6 +359,9 @@ function setColor(color) {
 function clearWhiteboard() {
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  stickyNotes.forEach(note => note.element.remove());
+  stickyNotes = [];
+  applyTemplate();
   if (ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify({ type: 'clear' }));
   }
