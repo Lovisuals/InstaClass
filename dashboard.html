@@ -11,8 +11,7 @@
 <body>
   <div class="container">
     <header>
-      <h1>InstaClass Educator Dashboard</h1>
-      <p>Empower your teaching with interactive tools</p>
+      <h1>InstaClass Dashboard</h1>
     </header>
     <div class="dashboard-grid">
       <button class="dashboard-button" onclick="startLivestream()">Start Livestream</button>
@@ -21,7 +20,8 @@
       <button class="dashboard-button" onclick="window.open('https://t.me/InstaClassAssistantBot', '_blank')">Chat with Assistant</button>
     </div>
     <div id="whiteboard-container" class="whiteboard-hidden">
-      <div class="whiteboard-controls">
+      <div class="whiteboard-controls" id="whiteboard-controls">
+        <button class="tool-button toggle-controls" onclick="toggleControls()">Hide Controls</button>
         <label for="frame-size">Frame Size</label>
         <select id="frame-size" onchange="setFrameSize()" aria-label="Select canvas size">
           <option value="responsive">Responsive (Auto)</option>

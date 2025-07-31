@@ -21,8 +21,10 @@ let currentZoom = 1;
 // Initialize canvas
 function initCanvas() {
   const container = document.getElementById('whiteboard-container');
+  const controls = document.getElementById('whiteboard-controls');
+  const controlsHeight = controls.classList.contains('whiteboard-controls-hidden') ? 30 : 100;
   const maxWidth = container.offsetWidth - 16;
-  const maxHeight = container.offsetHeight - 100;
+  const maxHeight = container.offsetHeight - controlsHeight - 50;
   let width, height;
 
   switch (frameSelect.value) {
@@ -66,6 +68,16 @@ window.addEventListener('resize', () => {
     note.element.style.top = `${Math.min(note.y, canvas.height - note.height)}px`;
   });
 });
+
+// Toggle controls
+function toggleControls() {
+  const controls = document.getElementById('whiteboard-controls');
+  controls.classList.toggle('whiteboard-controls-hidden');
+  const toggleBtn = controls.querySelector('.toggle-controls');
+  toggleBtn.innerText = controls.classList.contains('whiteboard-controls-hidden') ? 'Show Controls' : 'Hide Controls';
+  initCanvas();
+  Telegram.WebApp.showAlert(`Controls ${controls.classList.contains('whiteboard-controls-hidden') ? 'hidden' : 'shown'}!`);
+}
 
 // Set frame size
 function setFrameSize() {
@@ -444,6 +456,8 @@ function performWebSearch() {
   const mockResults = [
     { title: `Result 1 for "${query}"`, url: `https://example.com/?q=${encodeURIComponent(query)}` },
     { title: `Result 2 for "${query}"`, url: `https://example.org/?q=${encodeURIComponent(query)}` },
+    { title: `Result 3 for "${query}"`, url: `https://example.net/?q=${encodeURIComponent(query)}` },
+    { title: `Result 4 for "${query}"`, url: `https://example.edu/?q=${encodeURIComponent(query)}` },
   ];
 
   mockResults.forEach(result => {

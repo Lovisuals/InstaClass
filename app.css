@@ -5,56 +5,49 @@ body {
   padding: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .container {
   width: 100vw;
-  height: 100vh;
-  padding: 15px;
+  min-height: 100vh;
+  padding: 10px;
   background: #121212;
-  border-radius: 0;
-  box-shadow: none;
   text-align: center;
   color: #ffffff;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 header {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 h1 {
   color: #ffffff;
-  font-size: clamp(24px, 5vw, 28px);
-  font-weight: 700;
-  margin-bottom: 5px;
-}
-
-p {
-  color: #cccccc;
-  font-size: clamp(14px, 3vw, 16px);
-  margin-bottom: 10px;
+  font-size: clamp(20px, 4vw, 22px);
+  font-weight: 600;
+  margin: 0;
 }
 
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-  margin-bottom: 15px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .dashboard-button {
   background: linear-gradient(45deg, #405de6, #5851db);
   color: white;
   border: none;
-  padding: 12px 20px;
-  border-radius: 25px;
-  font-size: clamp(14px, 3.5vw, 16px);
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-size: clamp(13px, 3.2vw, 15px);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
@@ -68,33 +61,33 @@ p {
 .schedule-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 input, textarea, select {
-  padding: 10px;
+  padding: 8px;
   border: 1px solid #555;
-  border-radius: 8px;
-  font-size: clamp(12px, 3vw, 14px);
+  border-radius: 6px;
+  font-size: clamp(11px, 2.8vw, 13px);
   background: #333333;
   color: #ffffff;
   width: 100%;
   max-width: 250px;
-  margin: 5px auto;
+  margin: 4px auto;
 }
 
 #web-search {
-  max-width: 300px;
+  max-width: 280px;
 }
 
 #zoom-slider {
-  max-width: 150px;
+  max-width: 140px;
   cursor: pointer;
 }
 
 label {
-  font-size: clamp(12px, 3vw, 14px);
+  font-size: clamp(11px, 2.8vw, 13px);
   color: #cccccc;
   text-align: left;
   font-weight: 600;
@@ -102,7 +95,7 @@ label {
 
 #schedule-status {
   color: #cccccc;
-  font-size: clamp(12px, 3vw, 14px);
+  font-size: clamp(11px, 2.8vw, 13px);
 }
 
 .whiteboard-hidden {
@@ -111,28 +104,43 @@ label {
 
 #whiteboard-container {
   flex-grow: 1;
-  margin-top: 15px;
+  margin-top: 10px;
   border: 1px solid #555;
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: 8px;
+  padding: 8px;
   background: #ffffff;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 100px);
   transition: opacity 0.3s;
 }
 
 .whiteboard-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  transition: max-height 0.3s, opacity 0.3s;
+  max-height: 200px;
+  overflow: hidden;
+}
+
+.whiteboard-controls-hidden {
+  max-height: 30px;
+  opacity: 0.2;
+}
+
+.whiteboard-controls-hidden .tool-button:not(.toggle-controls),
+.whiteboard-controls-hidden label,
+.whiteboard-controls-hidden select,
+.whiteboard-controls-hidden input:not(#zoom-slider) {
+  display: none;
 }
 
 #whiteboard {
   border: 2px solid #555;
-  border-radius: 8px;
+  border-radius: 6px;
   background: #ffffff;
   width: 100%;
   max-width: 100%;
@@ -142,10 +150,10 @@ label {
 }
 
 .whiteboard-tools {
-  margin-top: 10px;
+  margin-top: 8px;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
   transition: opacity 0.3s;
 }
@@ -159,9 +167,9 @@ label {
   background: linear-gradient(45deg, #405de6, #5851db);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: clamp(12px, 3vw, 14px);
+  padding: 6px 14px;
+  border-radius: 18px;
+  font-size: clamp(11px, 2.8vw, 13px);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
@@ -172,13 +180,21 @@ label {
   transform: scale(1.05);
 }
 
+.toggle-controls {
+  background: #555;
+}
+
+.toggle-controls:hover {
+  background: #777;
+}
+
 #text-input {
   width: 100%;
-  max-width: 300px;
-  margin: 10px auto;
+  max-width: 280px;
+  margin: 8px auto;
   resize: none;
-  height: 40px;
-  border-radius: 8px;
+  height: 35px;
+  border-radius: 6px;
 }
 
 .sticky-note {
@@ -241,19 +257,19 @@ label {
 }
 
 #search-results {
-  margin-top: 10px;
-  max-height: 150px;
+  margin-top: 8px;
+  max-height: 200px;
   overflow-y: auto;
   background: #f0f0f0;
   border: 1px solid #555;
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 6px;
+  padding: 8px;
   max-width: 100%;
 }
 
 .search-result {
-  margin: 5px 0;
-  padding: 5px;
+  margin: 4px 0;
+  padding: 4px;
   background: #ffffff;
   border-radius: 4px;
   transition: background 0.2s;
