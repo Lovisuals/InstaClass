@@ -13,7 +13,7 @@ body {
 .container {
   width: 100vw;
   height: 100vh;
-  padding: 10px;
+  padding: 15px;
   background: #121212;
   border-radius: 0;
   box-shadow: none;
@@ -24,72 +24,85 @@ body {
   box-sizing: border-box;
 }
 
+header {
+  margin-bottom: 10px;
+}
+
 h1 {
   color: #ffffff;
-  font-size: clamp(20px, 4vw, 24px);
+  font-size: clamp(24px, 5vw, 28px);
+  font-weight: 700;
   margin-bottom: 5px;
 }
 
 p {
   color: #cccccc;
-  font-size: clamp(12px, 3vw, 14px);
+  font-size: clamp(14px, 3vw, 16px);
   margin-bottom: 10px;
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
-  margin-bottom: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 15px;
 }
 
 .dashboard-button {
-  background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+  background: linear-gradient(45deg, #405de6, #5851db);
   color: white;
   border: none;
-  padding: 8px;
-  border-radius: 6px;
-  font-size: clamp(12px, 3vw, 14px);
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: clamp(14px, 3.5vw, 16px);
+  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: background 0.3s, transform 0.2s;
 }
 
 .dashboard-button:hover {
+  background: linear-gradient(45deg, #833ab4, #c13584, #e1306c, #fd1d1d);
   transform: scale(1.05);
 }
 
 .schedule-form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: 15px;
 }
 
 input, textarea, select {
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #555;
-  border-radius: 4px;
-  font-size: clamp(10px, 2.5vw, 12px);
+  border-radius: 8px;
+  font-size: clamp(12px, 3vw, 14px);
   background: #333333;
   color: #ffffff;
   width: 100%;
-  max-width: 180px;
+  max-width: 250px;
   margin: 5px auto;
 }
 
 #web-search {
-  max-width: 250px;
+  max-width: 300px;
+}
+
+#zoom-slider {
+  max-width: 150px;
+  cursor: pointer;
 }
 
 label {
-  font-size: clamp(10px, 2.5vw, 12px);
+  font-size: clamp(12px, 3vw, 14px);
   color: #cccccc;
   text-align: left;
+  font-weight: 600;
 }
 
 #schedule-status {
   color: #cccccc;
-  font-size: clamp(10px, 2.5vw, 12px);
+  font-size: clamp(12px, 3vw, 14px);
 }
 
 .whiteboard-hidden {
@@ -98,62 +111,74 @@ label {
 
 #whiteboard-container {
   flex-grow: 1;
-  margin-top: 10px;
+  margin-top: 15px;
   border: 1px solid #555;
-  border-radius: 6px;
-  padding: 8px;
+  border-radius: 10px;
+  padding: 10px;
   background: #ffffff;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 150px); /* Adjust for header and controls */
+  max-height: calc(100vh - 150px);
+  transition: opacity 0.3s;
 }
 
 .whiteboard-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 #whiteboard {
   border: 2px solid #555;
-  border-radius: 4px;
+  border-radius: 8px;
   background: #ffffff;
   width: 100%;
   max-width: 100%;
   height: auto;
   touch-action: none;
+  transition: transform 0.3s;
 }
 
 .whiteboard-tools {
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
+  transition: opacity 0.3s;
+}
+
+.whiteboard-tools-hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .tool-button {
-  background: #555;
+  background: linear-gradient(45deg, #405de6, #5851db);
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: clamp(10px, 2.5vw, 12px);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: clamp(12px, 3vw, 14px);
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
 }
 
 .tool-button:hover {
-  background: #777;
+  background: linear-gradient(45deg, #833ab4, #c13584, #e1306c, #fd1d1d);
+  transform: scale(1.05);
 }
 
 #text-input {
   width: 100%;
-  max-width: 250px;
-  margin: 8px auto;
+  max-width: 300px;
+  margin: 10px auto;
   resize: none;
-  height: 35px;
+  height: 40px;
+  border-radius: 8px;
 }
 
 .sticky-note {
@@ -169,31 +194,46 @@ label {
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .sticky-note.selected {
-  box-shadow: 0 0 8px rgba(0, 0, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 0, 255, 0.5);
+  transform: scale(1.02);
+}
+
+.sticky-note.pinned {
+  border: 2px solid #ff4444;
+  z-index: 1100;
 }
 
 .sticky-note-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 2px;
 }
 
-.sticky-note-delete {
+.sticky-note-delete, .sticky-note-pin {
   background: #ff4444;
   color: white;
   border: none;
-  padding: 2px 5px;
-  border-radius: 3px;
+  padding: 2px 6px;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 10px;
+  transition: background 0.2s;
+}
+
+.sticky-note-pin {
+  background: #28a745;
 }
 
 .sticky-note-delete:hover {
   background: #cc0000;
+}
+
+.sticky-note-pin:hover {
+  background: #218838;
 }
 
 .search-results-hidden {
@@ -201,26 +241,32 @@ label {
 }
 
 #search-results {
-  margin-top: 8px;
+  margin-top: 10px;
   max-height: 150px;
   overflow-y: auto;
   background: #f0f0f0;
   border: 1px solid #555;
-  border-radius: 4px;
-  padding: 8px;
+  border-radius: 8px;
+  padding: 10px;
   max-width: 100%;
 }
 
 .search-result {
-  margin: 4px 0;
-  padding: 4px;
+  margin: 5px 0;
+  padding: 5px;
   background: #ffffff;
-  border-radius: 3px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.search-result:hover {
+  background: #e0e0e0;
 }
 
 .search-result a {
   color: #405de6;
   text-decoration: none;
+  font-weight: 600;
 }
 
 .search-result a:hover {

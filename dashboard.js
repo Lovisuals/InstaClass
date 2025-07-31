@@ -12,15 +12,17 @@ let textInput = document.getElementById('text-input');
 let frameSelect = document.getElementById('frame-size');
 let templateSelect = document.getElementById('template-select');
 let stickyColorSelect = document.getElementById('sticky-color');
+let zoomSlider = document.getElementById('zoom-slider');
 let textX, textY;
 let stickyNotes = [];
 let selectedStickyNote = null;
+let currentZoom = 1;
 
-// Initialize landscape canvas
+// Initialize canvas
 function initCanvas() {
   const container = document.getElementById('whiteboard-container');
-  const maxWidth = container.offsetWidth - 16; // Padding
-  const maxHeight = container.offsetHeight - 100; // Controls and textarea
+  const maxWidth = container.offsetWidth - 16;
+  const maxHeight = container.offsetHeight - 100;
   let width, height;
 
   switch (frameSelect.value) {
@@ -28,14 +30,14 @@ function initCanvas() {
     case 'iphone':
     case 'pc':
     case 'youtube':
-      width = Math.min(maxWidth, 1280); // Wider for full-screen
+      width = Math.min(maxWidth, 1280);
       height = width * (9 / 16);
       break;
     case 'instagram':
       width = Math.min(maxWidth, 800);
       height = width;
       break;
-    default: // responsive
+    default:
       width = maxWidth;
       height = width * (9 / 16);
       if (height > maxHeight) {
@@ -48,8 +50,7 @@ function initCanvas() {
   canvas.height = height;
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  setCanvasZoom();
   applyTemplate();
 }
 initCanvas();
@@ -61,8 +62,8 @@ window.addEventListener('resize', () => {
   ctx.putImageData(temp, 0, 0);
   stickyNotes.forEach(note => {
     document.body.appendChild(note.element);
-    note.element.style.left = `${Math.min(note.x, canvas.width - 100)}px`;
-    note.element.style.top = `${Math.min(note.y, canvas.height - 100)}px`;
+    note.element.style.left = `${Math.min(note.x, canvas.width - note.width)}px`;
+    note.element.style.top = `${Math.min(note.y, canvas.height - note.height)}px`;
   });
 });
 
@@ -73,6 +74,14 @@ function setFrameSize() {
   initCanvas();
   ctx.putImageData(temp, 0, 0);
   Telegram.WebApp.showAlert(`Frame size set to ${frameSelect.value}!`);
+}
+
+// Set canvas zoom
+function setCanvasZoom() {
+  currentZoom = parseFloat(zoomSlider.value);
+  canvas.style.transform = `scale(${currentZoom})`;
+  canvas.style.transformOrigin = 'top left';
+  Telegram.WebApp.showAlert(`Zoom set to ${currentZoom}x`);
 }
 
 // Apply template
@@ -95,6 +104,16 @@ function applyTemplate() {
       ctx.lineTo(canvas.width, y);
       ctx.stroke();
     }
+  } else if (templateSelect.value === 'education') {
+    ctx.strokeStyle = '#405de6';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(50, canvas.height / 2);
+    ctx.lineTo(canvas.width - 50, canvas.height / 2);
+    ctx.stroke();
+    ctx.font = '16px Poppins';
+    ctx.fillStyle = '#405de6';
+    ctx.fillText('Lesson Timeline', 50, canvas.height / 2 - 10);
   }
   Telegram.WebApp.showAlert(`Template set to ${templateSelect.value}!`);
 }
@@ -103,6 +122,13 @@ function applyTemplate() {
 function setStickyColor() {
   currentStickyColor = stickyColorSelect.value;
   Telegram.WebApp.showAlert(`Sticky note color set to ${stickyColorSelect.options[stickyColorSelect.selectedIndex].text}!`);
+}
+
+// Toggle toolbar
+function toggleToolbar() {
+  const toolbar = document.getElementById('whiteboard-tools');
+  toolbar.classList.toggle('whiteboard-tools-hidden');
+  Telegram.WebApp.showAlert(`Toolbar ${toolbar.classList.contains('whiteboard-tools-hidden') ? 'hidden' : 'shown'}!`);
 }
 
 // Initialize WebSocket
@@ -132,7 +158,7 @@ function connectWebSocket() {
       ctx.fillStyle = data.color;
       wrapText(data.text, data.x, data.y);
     } else if (data.type === 'sticky') {
-      addStickyNote(data.x, data.y, data.text, data.color, false);
+      addStickyNote(data.x, data.y, data.text, data.color, data.width, data.height, data.pinned, false);
     } else if (data.type === 'remove_sticky') {
       const note = stickyNotes.find(n => n.id === data.id);
       if (note) {
@@ -155,7 +181,7 @@ function connectWebSocket() {
 }
 connectWebSocket();
 
-// Wrap text to fit canvas
+// Wrap text
 function wrapText(text, x, y) {
   ctx.font = '16px Poppins';
   const maxWidth = canvas.width - x - 10;
@@ -190,7 +216,7 @@ function wrapText(text, x, y) {
   ctx.fillText(line, x, currentY);
 }
 
-// Place text on canvas
+// Place text
 function placeText() {
   const text = textInput.value.trim();
   if (text && textX && textY) {
@@ -210,21 +236,29 @@ function placeText() {
 }
 
 // Add sticky note
-function addStickyNote(x = 50, y = 50, text = 'New Note', color = currentStickyColor, broadcast = true) {
+function addStickyNote(x = 50, y = 50, text = 'New Note', color = currentStickyColor, width = 100, height = 100, pinned = false, broadcast = true) {
   const noteId = Date.now() + Math.random();
   const note = document.createElement('div');
   note.className = 'sticky-note';
   note.style.background = color;
   note.style.border = `1px solid ${darkenColor(color)}`;
-  note.style.left = `${Math.min(x, canvas.width - 100)}px`;
-  note.style.top = `${Math.min(y, canvas.height - 100)}px`;
+  note.style.left = `${Math.min(x, canvas.width - width)}px`;
+  note.style.top = `${Math.min(y, canvas.height - height)}px`;
+  note.style.width = `${width}px`;
+  note.style.height = `${height}px`;
+  if (pinned) note.classList.add('pinned');
 
   const header = document.createElement('div');
   header.className = 'sticky-note-header';
+  const pinBtn = document.createElement('button');
+  pinBtn.className = 'sticky-note-pin';
+  pinBtn.innerText = pinned ? 'Unpin' : 'Pin';
+  pinBtn.onclick = () => togglePinStickyNote(noteId);
   const deleteBtn = document.createElement('button');
   deleteBtn.className = 'sticky-note-delete';
   deleteBtn.innerText = 'X';
   deleteBtn.onclick = () => removeStickyNote(noteId);
+  header.appendChild(pinBtn);
   header.appendChild(deleteBtn);
   note.appendChild(header);
 
@@ -236,10 +270,11 @@ function addStickyNote(x = 50, y = 50, text = 'New Note', color = currentStickyC
   textarea.style.border = 'none';
   textarea.style.fontSize = '12px';
   textarea.style.fontFamily = 'Poppins, sans-serif';
+  textarea.style.resize = 'both';
   note.appendChild(textarea);
 
   document.body.appendChild(note);
-  stickyNotes.push({ id: noteId, element: note, x, y, color });
+  stickyNotes.push({ id: noteId, element: note, x, y, color, width, height, pinned });
 
   // Select sticky note
   note.addEventListener('click', (e) => {
@@ -268,8 +303,8 @@ function addStickyNote(x = 50, y = 50, text = 'New Note', color = currentStickyC
   }, { passive: false });
   document.addEventListener('mousemove', (e) => {
     if (isDragging && selectedStickyNote === noteId) {
-      note.style.left = `${Math.min(Math.max(e.clientX - offsetX, 0), canvas.width - 100)}px`;
-      note.style.top = `${Math.min(Math.max(e.clientY - offsetY, 0), canvas.height - 100)}px`;
+      note.style.left = `${Math.min(Math.max(e.clientX - offsetX, 0), canvas.width - note.offsetWidth)}px`;
+      note.style.top = `${Math.min(Math.max(e.clientY - offsetY, 0), canvas.height - note.offsetHeight)}px`;
       const noteData = stickyNotes.find(n => n.id === noteId);
       noteData.x = parseFloat(note.style.left);
       noteData.y = parseFloat(note.style.top);
@@ -279,8 +314,8 @@ function addStickyNote(x = 50, y = 50, text = 'New Note', color = currentStickyC
     if (isDragging && selectedStickyNote === noteId) {
       e.preventDefault();
       const touch = e.touches[0];
-      note.style.left = `${Math.min(Math.max(touch.clientX - offsetX, 0), canvas.width - 100)}px`;
-      note.style.top = `${Math.min(Math.max(touch.clientY - offsetY, 0), canvas.height - 100)}px`;
+      note.style.left = `${Math.min(Math.max(touch.clientX - offsetX, 0), canvas.width - note.offsetWidth)}px`;
+      note.style.top = `${Math.min(Math.max(touch.clientY - offsetY, 0), canvas.height - note.offsetHeight)}px`;
       const noteData = stickyNotes.find(n => n.id === noteId);
       noteData.x = parseFloat(note.style.left);
       noteData.y = parseFloat(note.style.top);
@@ -292,8 +327,15 @@ function addStickyNote(x = 50, y = 50, text = 'New Note', color = currentStickyC
     isDragging = false;
   }, { passive: false });
 
+  // Resize handler
+  textarea.addEventListener('resize', () => {
+    const noteData = stickyNotes.find(n => n.id === noteId);
+    noteData.width = note.offsetWidth;
+    noteData.height = note.offsetHeight;
+  });
+
   if (broadcast && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: 'sticky', x, y, text, color }));
+    ws.send(JSON.stringify({ type: 'sticky', x, y, text, color, width, height, pinned }));
   }
   Telegram.WebApp.showAlert('Sticky note added!');
 }
@@ -306,6 +348,21 @@ function selectStickyNote(id) {
     note.element.classList.add('selected');
     selectedStickyNote = id;
     Telegram.WebApp.showAlert('Sticky note selected! Press Delete to remove or drag to move.');
+  }
+}
+
+// Toggle pin sticky note
+function togglePinStickyNote(id) {
+  const note = stickyNotes.find(n => n.id === id);
+  if (note) {
+    note.pinned = !note.pinned;
+    note.element.classList.toggle('pinned');
+    const pinBtn = note.element.querySelector('.sticky-note-pin');
+    pinBtn.innerText = note.pinned ? 'Unpin' : 'Pin';
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'sticky', x: note.x, y: note.y, text: note.element.querySelector('textarea').value, color: note.color, width: note.width, height: note.height, pinned: note.pinned }));
+    }
+    Telegram.WebApp.showAlert(`Sticky note ${note.pinned ? 'pinned' : 'unpinned'}!`);
   }
 }
 
@@ -349,7 +406,20 @@ function removeAllStickyNotes() {
   Telegram.WebApp.showAlert('All sticky notes removed!');
 }
 
-// Darken color for border
+// Export to PDF
+function exportToPDF() {
+  const element = document.getElementById('whiteboard-container');
+  html2pdf().from(element).set({
+    margin: 10,
+    filename: 'whiteboard.pdf',
+    image: { type: 'png', quality: 0.95 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+  }).save();
+  Telegram.WebApp.showAlert('Whiteboard exported as PDF!');
+}
+
+// Darken color
 function darkenColor(hex) {
   let r = parseInt(hex.slice(1, 3), 16);
   let g = parseInt(hex.slice(3, 5), 16);
@@ -395,21 +465,21 @@ function performWebSearch() {
 canvas.addEventListener('mousedown', (e) => {
   const rect = canvas.getBoundingClientRect();
   if (textInput.value.trim()) {
-    textX = e.clientX - rect.left;
-    textY = e.clientY - rect.top;
+    textX = (e.clientX - rect.left) / currentZoom;
+    textY = (e.clientY - rect.top) / currentZoom;
     placeText();
   } else {
     drawing = true;
     ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.moveTo((e.clientX - rect.left) / currentZoom, (e.clientY - rect.top) / currentZoom);
   }
 });
 
 canvas.addEventListener('mousemove', (e) => {
   if (drawing) {
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = (e.clientX - rect.left) / currentZoom;
+    const y = (e.clientY - rect.top) / currentZoom;
     ctx.lineTo(x, y);
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = 2;
@@ -436,13 +506,13 @@ canvas.addEventListener('touchstart', (e) => {
   const touch = e.touches[0];
   const rect = canvas.getBoundingClientRect();
   if (textInput.value.trim()) {
-    textX = touch.clientX - rect.left;
-    textY = touch.clientY - rect.top;
+    textX = (touch.clientX - rect.left) / currentZoom;
+    textY = (touch.clientY - rect.top) / currentZoom;
     placeText();
   } else {
     drawing = true;
     ctx.beginPath();
-    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    ctx.moveTo((touch.clientX - rect.left) / currentZoom, (touch.clientY - rect.top) / currentZoom);
   }
 }, { passive: false });
 
@@ -451,8 +521,8 @@ canvas.addEventListener('touchmove', (e) => {
   if (drawing) {
     const touch = e.touches[0];
     const rect = canvas.getBoundingClientRect();
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
+    const x = (touch.clientX - rect.left) / currentZoom;
+    const y = (touch.clientY - rect.top) / currentZoom;
     ctx.lineTo(x, y);
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = 2;
@@ -529,7 +599,7 @@ function viewChatHistory() {
   Telegram.WebApp.showAlert('Chat history request sent!');
 }
 
-document.getElementById('schedule-lecture').addEventListener('click', () => {
+function scheduleLecture() {
   const topic = document.getElementById('lecture-topic').value;
   const time = document.getElementById('lecture-time').value;
   if (topic && time) {
@@ -540,4 +610,4 @@ document.getElementById('schedule-lecture').addEventListener('click', () => {
     Telegram.WebApp.showAlert('Please enter topic and time.');
     document.getElementById('schedule-status').innerText = 'Missing topic or time.';
   }
-});
+}

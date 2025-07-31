@@ -5,55 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>InstaClass Dashboard</title>
   <link rel="stylesheet" href="app.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>InstaClass Educator Dashboard</h1>
-    <p>Welcome, Educator! Manage your classes here.</p>
+    <header>
+      <h1>InstaClass Educator Dashboard</h1>
+      <p>Empower your teaching with interactive tools</p>
+    </header>
     <div class="dashboard-grid">
-      <button class="dashboard-button" id="start-livestream" onclick="startLivestream()">Start Livestream</button>
-      <button class="dashboard-button" id="view-history" onclick="viewChatHistory()">View Chat History</button>
-      <button class="dashboard-button" id="open-whiteboard" onclick="toggleWhiteboard()">Open/Close Whiteboard</button>
-      <button class="dashboard-button" id="chat-assistant" onclick="window.open('https://t.me/InstaClassAssistantBot', '_blank')">Chat with Assistant</button>
-      <div id="whiteboard-container" class="whiteboard-hidden">
-        <div class="whiteboard-controls">
-          <label for="frame-size">Frame Size</label>
-          <select id="frame-size" onchange="setFrameSize()">
-            <option value="responsive">Responsive (Auto)</option>
-            <option value="android">Android (16:9)</option>
-            <option value="iphone">iPhone (16:9)</option>
-            <option value="pc">PC (16:9)</option>
-            <option value="youtube">YouTube (16:9)</option>
-            <option value="instagram">Instagram (1:1)</option>
-          </select>
-          <label for="template-select">Template</label>
-          <select id="template-select" onchange="applyTemplate()">
-            <option value="blank">Blank Canvas</option>
-            <option value="grid">Grid (Lesson Plan)</option>
-          </select>
-          <label for="sticky-color">Sticky Note Color</label>
-          <select id="sticky-color" onchange="setStickyColor()">
-            <option value="#fff3cd">Yellow</option>
-            <option value="#f8d7da">Pink</option>
-            <option value="#d1e7dd">Green</option>
-            <option value="#d0e1f9">Blue</option>
-          </select>
-          <button class="tool-button" onclick="addStickyNote()">Add Sticky Note</button>
-          <button class="tool-button" onclick="removeAllStickyNotes()">Remove All Sticky Notes</button>
-          <input id="web-search" type="text" placeholder="Search web..." aria-label="Web search for consultations">
-          <button class="tool-button" onclick="performWebSearch()">Search</button>
-        </div>
-        <canvas id="whiteboard" aria-label="Interactive landscape whiteboard for drawing, notes, and sticky notes"></canvas>
-        <div id="search-results" class="search-results-hidden"></div>
-        <textarea id="text-input" placeholder="Type note to add to whiteboard" aria-label="Text input for whiteboard notes"></textarea>
-        <div class="whiteboard-tools">
-          <button class="tool-button" onclick="setColor('black')">Black</button>
-          <button class="tool-button" onclick="setColor('red')">Red</button>
-          <button class="tool-button" onclick="setColor('blue')">Blue</button>
-          <button class="tool-button" onclick="clearWhiteboard()">Clear</button>
-          <button class="tool-button" onclick="saveWhiteboard()">Save</button>
-        </div>
+      <button class="dashboard-button" onclick="startLivestream()">Start Livestream</button>
+      <button class="dashboard-button" onclick="viewChatHistory()">View Chat History</button>
+      <button class="dashboard-button" onclick="toggleWhiteboard()">Open/Close Whiteboard</button>
+      <button class="dashboard-button" onclick="window.open('https://t.me/InstaClassAssistantBot', '_blank')">Chat with Assistant</button>
+    </div>
+    <div id="whiteboard-container" class="whiteboard-hidden">
+      <div class="whiteboard-controls">
+        <label for="frame-size">Frame Size</label>
+        <select id="frame-size" onchange="setFrameSize()" aria-label="Select canvas size">
+          <option value="responsive">Responsive (Auto)</option>
+          <option value="android">Android (16:9)</option>
+          <option value="iphone">iPhone (16:9)</option>
+          <option value="pc">PC (16:9)</option>
+          <option value="youtube">YouTube (16:9)</option>
+          <option value="instagram">Instagram (1:1)</option>
+        </select>
+        <label for="template-select">Template</label>
+        <select id="template-select" onchange="applyTemplate()" aria-label="Select whiteboard template">
+          <option value="blank">Blank Canvas</option>
+          <option value="grid">Grid (Lesson Plan)</option>
+          <option value="education">Education (Timeline)</option>
+        </select>
+        <label for="sticky-color">Sticky Note Color</label>
+        <select id="sticky-color" onchange="setStickyColor()" aria-label="Select sticky note color">
+          <option value="#fff3cd">Yellow</option>
+          <option value="#f8d7da">Pink</option>
+          <option value="#d1e7dd">Green</option>
+          <option value="#d0e1f9">Blue</option>
+        </select>
+        <button class="tool-button" onclick="addStickyNote()">Add Sticky Note</button>
+        <button class="tool-button" onclick="removeAllStickyNotes()">Remove All Sticky Notes</button>
+        <button class="tool-button" onclick="toggleToolbar()">Toggle Toolbar</button>
+        <button class="tool-button" onclick="exportToPDF()">Export to PDF</button>
+        <label for="zoom-slider">Zoom</label>
+        <input type="range" id="zoom-slider" min="0.5" max="2" step="0.1" value="1" onchange="setCanvasZoom()" aria-label="Adjust canvas zoom">
+        <input id="web-search" type="text" placeholder="Search web..." aria-label="Web search for consultations">
+        <button class="tool-button" onclick="performWebSearch()">Search</button>
+      </div>
+      <canvas id="whiteboard" aria-label="Interactive landscape whiteboard for drawing, notes, and sticky notes"></canvas>
+      <div id="search-results" class="search-results-hidden"></div>
+      <textarea id="text-input" placeholder="Type note to add to whiteboard" aria-label="Text input for whiteboard notes"></textarea>
+      <div class="whiteboard-tools" id="whiteboard-tools">
+        <button class="tool-button" onclick="setColor('black')">Black</button>
+        <button class="tool-button" onclick="setColor('red')">Red</button>
+        <button class="tool-button" onclick="setColor('blue')">Blue</button>
+        <button class="tool-button" onclick="clearWhiteboard()">Clear</button>
+        <button class="tool-button" onclick="saveWhiteboard()">Save as Image</button>
       </div>
     </div>
     <div class="schedule-form">
@@ -62,7 +70,7 @@
       <input id="lecture-topic" type="text" placeholder="Enter topic (e.g., English Grammar)" aria-label="Lecture topic">
       <label for="lecture-time">Lecture Time</label>
       <input id="lecture-time" type="datetime-local" placeholder="Select date and time" aria-label="Lecture date and time">
-      <button class="dashboard-button" id="schedule-lecture">Schedule Lecture</button>
+      <button class="dashboard-button" onclick="scheduleLecture()">Schedule Lecture</button>
       <p id="schedule-status">Ready to schedule...</p>
     </div>
   </div>
