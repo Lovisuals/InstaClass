@@ -1,6 +1,6 @@
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Original Instagram-like gradient */
   margin: 0;
   padding: 0;
   display: flex;
@@ -12,20 +12,21 @@ body {
 .container {
   max-width: 800px;
   padding: 20px;
-  background: white;
+  background: #121212; /* Dark Instagram-like background */
   border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
   text-align: center;
+  color: #ffffff;
 }
 
 h1 {
-  color: #333;
+  color: #ffffff;
   font-size: 28px;
   margin-bottom: 10px;
 }
 
 p {
-  color: #666;
+  color: #cccccc;
   font-size: 16px;
   margin-bottom: 20px;
 }
@@ -61,19 +62,21 @@ p {
 
 input {
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #555;
   border-radius: 5px;
   font-size: 14px;
+  background: #333333;
+  color: #ffffff;
 }
 
 label {
   font-size: 14px;
-  color: #333;
+  color: #cccccc;
   text-align: left;
 }
 
 #schedule-status {
-  color: #333;
+  color: #cccccc;
   font-size: 14px;
 }
 
@@ -83,16 +86,16 @@ label {
 
 #whiteboard-container {
   margin-top: 20px;
-  border: 1px solid #ddd;
+  border: 1px solid #555;
   border-radius: 8px;
   padding: 10px;
-  background: #fff;
+  background: #ffffff; /* White for whiteboard container */
 }
 
 #whiteboard {
-  border: 2px solid #333;
+  border: 2px solid #555;
   border-radius: 5px;
-  background: #fff;
+  background: #ffffff; /* White canvas */
 }
 
 .whiteboard-tools {
@@ -103,7 +106,7 @@ label {
 }
 
 .tool-button {
-  background: #333;
+  background: #555;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -113,5 +116,5 @@ label {
 }
 
 .tool-button:hover {
-  background: #555;
+  background: #777;
 }
