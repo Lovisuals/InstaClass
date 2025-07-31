@@ -21,8 +21,8 @@
           <label for="frame-size">Frame Size</label>
           <select id="frame-size" onchange="setFrameSize()">
             <option value="responsive">Responsive (Auto)</option>
-            <option value="android">Android (9:16)</option>
-            <option value="iphone">iPhone (9:16)</option>
+            <option value="android">Android (16:9)</option>
+            <option value="iphone">iPhone (16:9)</option>
             <option value="pc">PC (16:9)</option>
             <option value="youtube">YouTube (16:9)</option>
             <option value="instagram">Instagram (1:1)</option>
@@ -32,9 +32,20 @@
             <option value="blank">Blank Canvas</option>
             <option value="grid">Grid (Lesson Plan)</option>
           </select>
+          <label for="sticky-color">Sticky Note Color</label>
+          <select id="sticky-color" onchange="setStickyColor()">
+            <option value="#fff3cd">Yellow</option>
+            <option value="#f8d7da">Pink</option>
+            <option value="#d1e7dd">Green</option>
+            <option value="#d0e1f9">Blue</option>
+          </select>
           <button class="tool-button" onclick="addStickyNote()">Add Sticky Note</button>
+          <button class="tool-button" onclick="removeAllStickyNotes()">Remove All Sticky Notes</button>
+          <input id="web-search" type="text" placeholder="Search web..." aria-label="Web search for consultations">
+          <button class="tool-button" onclick="performWebSearch()">Search</button>
         </div>
-        <canvas id="whiteboard" aria-label="Interactive whiteboard for drawing, notes, and sticky notes"></canvas>
+        <canvas id="whiteboard" aria-label="Interactive landscape whiteboard for drawing, notes, and sticky notes"></canvas>
+        <div id="search-results" class="search-results-hidden"></div>
         <textarea id="text-input" placeholder="Type note to add to whiteboard" aria-label="Text input for whiteboard notes"></textarea>
         <div class="whiteboard-tools">
           <button class="tool-button" onclick="setColor('black')">Black</button>
