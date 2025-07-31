@@ -10,7 +10,7 @@ body {
 }
 
 .container {
-  max-width: 800px;
+  max-width: 90vw; /* Responsive width */
   padding: 20px;
   background: #121212; /* Dark Instagram-like background */
   border-radius: 15px;
@@ -21,19 +21,19 @@ body {
 
 h1 {
   color: #ffffff;
-  font-size: 28px;
+  font-size: clamp(24px, 5vw, 28px); /* Responsive font size */
   margin-bottom: 10px;
 }
 
 p {
   color: #cccccc;
-  font-size: 16px;
+  font-size: clamp(14px, 4vw, 16px);
   margin-bottom: 20px;
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 15px;
   margin-bottom: 20px;
 }
@@ -44,7 +44,7 @@ p {
   border: none;
   padding: 12px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: clamp(14px, 4vw, 16px);
   cursor: pointer;
   transition: transform 0.2s;
 }
@@ -64,20 +64,20 @@ input, textarea {
   padding: 10px;
   border: 1px solid #555;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: clamp(12px, 3.5vw, 14px);
   background: #333333;
   color: #ffffff;
 }
 
 label {
-  font-size: 14px;
+  font-size: clamp(12px, 3.5vw, 14px);
   color: #cccccc;
   text-align: left;
 }
 
 #schedule-status {
   color: #cccccc;
-  font-size: 14px;
+  font-size: clamp(12px, 3.5vw, 14px);
 }
 
 .whiteboard-hidden {
@@ -97,8 +97,10 @@ label {
   border-radius: 5px;
   background: #ffffff; /* White canvas */
   width: 100%;
-  max-width: 600px;
-  height: 400px;
+  height: 60vh; /* Responsive height */
+  max-width: 800px;
+  max-height: 600px;
+  touch-action: none; /* Prevent default touch actions */
 }
 
 .whiteboard-tools {
@@ -115,7 +117,7 @@ label {
   border: none;
   padding: 8px 16px;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: clamp(12px, 3.5vw, 14px);
   cursor: pointer;
 }
 
@@ -125,6 +127,8 @@ label {
 
 #text-input {
   width: 100%;
-  max-width: 200px;
+  max-width: 300px;
   margin: 10px auto;
+  resize: none;
+  height: 40px;
 }

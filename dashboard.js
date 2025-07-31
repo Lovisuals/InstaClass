@@ -10,9 +10,22 @@ let ws;
 let textInput = document.getElementById('text-input');
 let textX, textY;
 
-// Initialize canvas with white background
-ctx.fillStyle = '#ffffff';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
+// Initialize canvas with responsive size
+function initCanvas() {
+  const container = document.getElementById('whiteboard-container');
+  canvas.width = container.offsetWidth - 20; // Account for padding
+  canvas.height = Math.min(window.innerHeight * 0.6, 600); // 60vh or max 600px
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+initCanvas();
+
+// Handle window resize
+window.addEventListener('resize', () => {
+  const temp = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  initCanvas();
+  ctx.putImageData(temp, 0, 0);
+});
 
 // Initialize WebSocket
 function connectWebSocket() {
@@ -54,7 +67,7 @@ connectWebSocket();
 // Mouse events
 canvas.addEventListener('mousedown', (e) => {
   const rect = canvas.getBoundingClientRect();
-  if (textInput.value) {
+  if (textInput.value.trim()) {
     textX = e.clientX - rect.left;
     textY = e.clientY - rect.top;
     placeText();
@@ -97,7 +110,7 @@ canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
   const touch = e.touches[0];
   const rect = canvas.getBoundingClientRect();
-  if (textInput.value) {
+  if (textInput.value.trim()) {
     textX = touch.clientX - rect.left;
     textY = touch.clientY - rect.top;
     placeText();
@@ -135,7 +148,7 @@ canvas.addEventListener('touchend', (e) => {
 
 // Place text on canvas
 function placeText() {
-  const text = textInput.value;
+  const text = textInput.value.trim();
   if (text && textX && textY) {
     ctx.font = '16px Poppins';
     ctx.fillStyle = currentColor;
@@ -151,6 +164,7 @@ function placeText() {
 function toggleWhiteboard() {
   const container = document.getElementById('whiteboard-container');
   container.classList.toggle('whiteboard-hidden');
+  initCanvas(); // Re-init canvas size when toggled
   Telegram.WebApp.sendData(JSON.stringify({ action: 'open_whiteboard' }));
   Telegram.WebApp.showAlert('Whiteboard toggled!');
 }
@@ -172,12 +186,19 @@ function clearWhiteboard() {
 }
 
 function saveWhiteboard() {
-  const dataURL = canvas.toDataURL('image/png');
-  const link = document.createElement('a');
-  link.href = dataURL;
-  link.download = 'whiteboard.png';
-  link.click();
-  Telegram.WebApp.showAlert('Whiteboard saved as image!');
+  try {
+    const dataURL = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = dataURL;
+    link.download = 'whiteboard.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    Telegram.WebApp.showAlert('Whiteboard saved as image!');
+  } catch (error) {
+    console.error('Save error:', error);
+    Telegram.WebApp.showAlert('Failed to save whiteboard. Please try again.');
+  }
 }
 
 function startLivestream() {
