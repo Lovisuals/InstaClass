@@ -8,13 +8,37 @@ let drawing = false;
 let currentColor = 'black';
 let ws;
 let textInput = document.getElementById('text-input');
+let frameSelect = document.getElementById('frame-size');
 let textX, textY;
 
-// Initialize canvas with responsive size
+// Initialize canvas with selected frame size
 function initCanvas() {
   const container = document.getElementById('whiteboard-container');
-  canvas.width = container.offsetWidth - 20; // Account for padding
-  canvas.height = Math.min(window.innerHeight * 0.6, 600); // 60vh or max 600px
+  const maxWidth = container.offsetWidth - 20; // Account for padding
+  let width, height;
+
+  switch (frameSelect.value) {
+    case 'android':
+    case 'iphone':
+      width = Math.min(maxWidth, 360); // Typical mobile width
+      height = width * (16 / 9); // 9:16 aspect ratio
+      break;
+    case 'pc':
+    case 'youtube':
+      width = Math.min(maxWidth, 800); // Typical widescreen
+      height = width * (9 / 16); // 16:9 aspect ratio
+      break;
+    case 'instagram':
+      width = Math.min(maxWidth, 600); // Square
+      height = width; // 1:1 aspect ratio
+      break;
+    default: // responsive
+      width = maxWidth;
+      height = Math.min(window.innerHeight * 0.6, 600); // 60vh or max 600px
+  }
+
+  canvas.width = width;
+  canvas.height = height;
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
@@ -26,6 +50,14 @@ window.addEventListener('resize', () => {
   initCanvas();
   ctx.putImageData(temp, 0, 0);
 });
+
+// Set frame size
+function setFrameSize() {
+  const temp = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  initCanvas();
+  ctx.putImageData(temp, 0, 0);
+  Telegram.WebApp.showAlert(`Frame size set to ${frameSelect.value}!`);
+}
 
 // Initialize WebSocket
 function connectWebSocket() {
@@ -146,15 +178,26 @@ canvas.addEventListener('touchend', (e) => {
   ctx.closePath();
 }, { passive: false });
 
-// Place text on canvas
+// Place text on canvas with boundary check
 function placeText() {
   const text = textInput.value.trim();
   if (text && textX && textY) {
     ctx.font = '16px Poppins';
+    const textWidth = ctx.measureText(text).width;
+    const maxX = canvas.width - textWidth - 10; // 10px padding
+    const maxY = canvas.height - 10; // 10px padding
+    const adjustedX = Math.min(textX, maxX); // Prevent overflow
+    const adjustedY = Math.max(textY, 16); // Ensure text is not too high
+
+    if (adjustedX < 0 || adjustedY > canvas.height) {
+      Telegram.WebApp.showAlert('Text cannot be placed outside canvas boundaries.');
+      return;
+    }
+
     ctx.fillStyle = currentColor;
-    ctx.fillText(text, textX, textY);
+    ctx.fillText(text, adjustedX, adjustedY);
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'text', text, x: textX, y: textY, color: currentColor }));
+      ws.send(JSON.stringify({ type: 'text', text, x: adjustedX, y: adjustedY, color: currentColor }));
     }
     textInput.value = '';
     Telegram.WebApp.showAlert('Text added to whiteboard!');
