@@ -20,49 +20,63 @@
       <button class="dashboard-button" onclick="window.open('https://t.me/InstaClassAssistantBot', '_blank')">Chat with Assistant</button>
     </div>
     <div id="whiteboard-container" class="whiteboard-hidden">
-      <div class="whiteboard-controls" id="whiteboard-controls">
-        <button class="tool-button toggle-controls" onclick="toggleControls()">Hide Controls</button>
-        <label for="frame-size">Frame Size</label>
-        <select id="frame-size" onchange="setFrameSize()" aria-label="Select canvas size">
-          <option value="responsive">Responsive (Auto)</option>
-          <option value="android">Android (16:9)</option>
-          <option value="iphone">iPhone (16:9)</option>
-          <option value="pc">PC (16:9)</option>
-          <option value="youtube">YouTube (16:9)</option>
-          <option value="instagram">Instagram (1:1)</option>
-        </select>
-        <label for="template-select">Template</label>
-        <select id="template-select" onchange="applyTemplate()" aria-label="Select whiteboard template">
-          <option value="blank">Blank Canvas</option>
-          <option value="grid">Grid (Lesson Plan)</option>
-          <option value="education">Education (Timeline)</option>
-        </select>
-        <label for="sticky-color">Sticky Note Color</label>
-        <select id="sticky-color" onchange="setStickyColor()" aria-label="Select sticky note color">
-          <option value="#fff3cd">Yellow</option>
-          <option value="#f8d7da">Pink</option>
-          <option value="#d1e7dd">Green</option>
-          <option value="#d0e1f9">Blue</option>
-        </select>
-        <button class="tool-button" onclick="addStickyNote()">Add Sticky Note</button>
-        <button class="tool-button" onclick="removeAllStickyNotes()">Remove All Sticky Notes</button>
-        <button class="tool-button" onclick="toggleToolbar()">Toggle Toolbar</button>
-        <button class="tool-button" onclick="exportToPDF()">Export to PDF</button>
-        <label for="zoom-slider">Zoom</label>
-        <input type="range" id="zoom-slider" min="0.5" max="2" step="0.1" value="1" onchange="setCanvasZoom()" aria-label="Adjust canvas zoom">
-        <input id="web-search" type="text" placeholder="Search web..." aria-label="Web search for consultations">
-        <button class="tool-button" onclick="performWebSearch()">Search</button>
+      <div class="tools-panel" id="tools-panel">
+        <button class="tool-button toggle-tools" onclick="toggleTools()">Show Tools</button>
+        <div class="whiteboard-controls" id="whiteboard-controls">
+          <label for="frame-size">Frame Size</label>
+          <select id="frame-size" onchange="setFrameSize()" aria-label="Select canvas size">
+            <option value="responsive">Responsive (Auto)</option>
+            <option value="android">Android (16:9)</option>
+            <option value="iphone">iPhone (16:9)</option>
+            <option value="pc">PC (16:9)</option>
+            <option value="youtube">YouTube (16:9)</option>
+            <option value="instagram">Instagram (1:1)</option>
+          </select>
+          <label for="template-select">Template</label>
+          <select id="template-select" onchange="applyTemplate()" aria-label="Select whiteboard template">
+            <option value="blank">Blank Canvas</option>
+            <option value="grid">Grid (Lesson Plan)</option>
+            <option value="education">Education (Timeline)</option>
+          </select>
+          <label for="sticky-color">Sticky Note Color</label>
+          <select id="sticky-color" onchange="setStickyColor()" aria-label="Select sticky note color">
+            <option value="#fff3cd">Yellow</option>
+            <option value="#f8d7da">Pink</option>
+            <option value="#d1e7dd">Green</option>
+            <option value="#d0e1f9">Blue</option>
+          </select>
+          <button class="tool-button" onclick="addStickyNote()">Add Sticky Note</button>
+          <button class="tool-button" onclick="removeAllStickyNotes()">Remove All Sticky Notes</button>
+          <button class="tool-button" onclick="exportToPDF()">Export to PDF</button>
+          <label for="zoom-slider">Zoom</label>
+          <input type="range" id="zoom-slider" min="0.5" max="2" step="0.1" value="1" onchange="setCanvasZoom()" aria-label="Adjust canvas zoom">
+          <input id="web-search" type="text" placeholder="Search web..." aria-label="Web search for consultations">
+          <button class="tool-button" onclick="performWebSearch()">Search</button>
+        </div>
+        <div class="whiteboard-tools" id="whiteboard-tools">
+          <label for="color-picker">Draw Color</label>
+          <div class="color-palette" id="color-palette">
+            <div class="color-box" style="background: #000000" onclick="setColor('#000000')"></div>
+            <div class="color-box" style="background: #ff0000" onclick="setColor('#ff0000')"></div>
+            <div class="color-box" style="background: #00ff00" onclick="setColor('#00ff00')"></div>
+            <div class="color-box" style="background: #0000ff" onclick="setColor('#0000ff')"></div>
+            <div class="color-box" style="background: #ffff00" onclick="setColor('#ffff00')"></div>
+            <div class="color-box" style="background: #ff00ff" onclick="setColor('#ff00ff')"></div>
+            <div class="color-box" style="background: #00ffff" onclick="setColor('#00ffff')"></div>
+            <div class="color-box" style="background: #ff4500" onclick="setColor('#ff4500')"></div>
+            <div class="color-box" style="background: #8a2be2" onclick="setColor('#8a2be2')"></div>
+            <div class="color-box" style="background: #32cd32" onclick="setColor('#32cd32')"></div>
+            <div class="color-box" style="background: #ff69b4" onclick="setColor('#ff69b4')"></div>
+            <div class="color-box" style="background: #4682b4" onclick="setColor('#4682b4')"></div>
+          </div>
+          <input type="text" id="color-input" placeholder="Enter hex color (e.g., #ff0000)" oninput="setColor(this.value)" aria-label="Custom hex color input">
+          <button class="tool-button" onclick="clearWhiteboard()">Clear</button>
+          <button class="tool-button" onclick="saveWhiteboard()">Save as Image</button>
+        </div>
       </div>
       <canvas id="whiteboard" aria-label="Interactive landscape whiteboard for drawing, notes, and sticky notes"></canvas>
       <div id="search-results" class="search-results-hidden"></div>
       <textarea id="text-input" placeholder="Type note to add to whiteboard" aria-label="Text input for whiteboard notes"></textarea>
-      <div class="whiteboard-tools" id="whiteboard-tools">
-        <button class="tool-button" onclick="setColor('black')">Black</button>
-        <button class="tool-button" onclick="setColor('red')">Red</button>
-        <button class="tool-button" onclick="setColor('blue')">Blue</button>
-        <button class="tool-button" onclick="clearWhiteboard()">Clear</button>
-        <button class="tool-button" onclick="saveWhiteboard()">Save as Image</button>
-      </div>
     </div>
     <div class="schedule-form">
       <h2>Schedule a Live Lecture</h2>

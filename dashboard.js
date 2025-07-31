@@ -5,7 +5,7 @@ Telegram.expand();
 const canvas = document.getElementById('whiteboard');
 const ctx = canvas.getContext('2d');
 let drawing = false;
-let currentColor = 'black';
+let currentColor = '#000000';
 let currentStickyColor = '#fff3cd';
 let ws;
 let textInput = document.getElementById('text-input');
@@ -13,6 +13,7 @@ let frameSelect = document.getElementById('frame-size');
 let templateSelect = document.getElementById('template-select');
 let stickyColorSelect = document.getElementById('sticky-color');
 let zoomSlider = document.getElementById('zoom-slider');
+let colorInput = document.getElementById('color-input');
 let textX, textY;
 let stickyNotes = [];
 let selectedStickyNote = null;
@@ -21,10 +22,10 @@ let currentZoom = 1;
 // Initialize canvas
 function initCanvas() {
   const container = document.getElementById('whiteboard-container');
-  const controls = document.getElementById('whiteboard-controls');
-  const controlsHeight = controls.classList.contains('whiteboard-controls-hidden') ? 30 : 100;
+  const toolsPanel = document.getElementById('tools-panel');
+  const toolsHeight = toolsPanel.classList.contains('tools-panel-hidden') ? 30 : 200;
   const maxWidth = container.offsetWidth - 16;
-  const maxHeight = container.offsetHeight - controlsHeight - 50;
+  const maxHeight = container.offsetHeight - toolsHeight - 50;
   let width, height;
 
   switch (frameSelect.value) {
@@ -55,7 +56,10 @@ function initCanvas() {
   setCanvasZoom();
   applyTemplate();
 }
-initCanvas();
+
+// Initialize whiteboard as hidden
+document.getElementById('whiteboard-container').classList.add('whiteboard-hidden');
+document.getElementById('tools-panel').classList.add('tools-panel-hidden');
 
 // Handle window resize
 window.addEventListener('resize', () => {
@@ -69,14 +73,14 @@ window.addEventListener('resize', () => {
   });
 });
 
-// Toggle controls
-function toggleControls() {
-  const controls = document.getElementById('whiteboard-controls');
-  controls.classList.toggle('whiteboard-controls-hidden');
-  const toggleBtn = controls.querySelector('.toggle-controls');
-  toggleBtn.innerText = controls.classList.contains('whiteboard-controls-hidden') ? 'Show Controls' : 'Hide Controls';
+// Toggle tools panel
+function toggleTools() {
+  const toolsPanel = document.getElementById('tools-panel');
+  toolsPanel.classList.toggle('tools-panel-hidden');
+  const toggleBtn = toolsPanel.querySelector('.toggle-tools');
+  toggleBtn.innerText = toolsPanel.classList.contains('tools-panel-hidden') ? 'Show Tools' : 'Hide Tools';
   initCanvas();
-  Telegram.WebApp.showAlert(`Controls ${controls.classList.contains('whiteboard-controls-hidden') ? 'hidden' : 'shown'}!`);
+  Telegram.WebApp.showAlert(`Tools ${toolsPanel.classList.contains('tools-panel-hidden') ? 'hidden' : 'shown'}!`);
 }
 
 // Set frame size
@@ -136,11 +140,16 @@ function setStickyColor() {
   Telegram.WebApp.showAlert(`Sticky note color set to ${stickyColorSelect.options[stickyColorSelect.selectedIndex].text}!`);
 }
 
-// Toggle toolbar
-function toggleToolbar() {
-  const toolbar = document.getElementById('whiteboard-tools');
-  toolbar.classList.toggle('whiteboard-tools-hidden');
-  Telegram.WebApp.showAlert(`Toolbar ${toolbar.classList.contains('whiteboard-tools-hidden') ? 'hidden' : 'shown'}!`);
+// Set drawing color
+function setColor(color) {
+  if (/^#[0-9A-F]{6}$/i.test(color)) {
+    currentColor = color;
+    colorInput.value = color;
+    Telegram.WebApp.sendData(JSON.stringify({ action: 'set_whiteboard_color', color }));
+    Telegram.WebApp.showAlert(`Color ${color} selected!`);
+  } else {
+    Telegram.WebApp.showAlert('Invalid hex color. Use #RRGGBB format.');
+  }
 }
 
 // Initialize WebSocket
@@ -282,6 +291,7 @@ function addStickyNote(x = 50, y = 50, text = 'New Note', color = currentStickyC
   textarea.style.border = 'none';
   textarea.style.fontSize = '12px';
   textarea.style.fontFamily = 'Poppins, sans-serif';
+  textarea.style.color = '#000000';
   textarea.style.resize = 'both';
   note.appendChild(textarea);
 
@@ -556,14 +566,10 @@ canvas.addEventListener('touchend', (e) => {
 function toggleWhiteboard() {
   const container = document.getElementById('whiteboard-container');
   container.classList.toggle('whiteboard-hidden');
-  initCanvas();
-  Telegram.WebApp.showAlert('Whiteboard toggled!');
-}
-
-function setColor(color) {
-  currentColor = color;
-  Telegram.WebApp.sendData(JSON.stringify({ action: 'set_whiteboard_color', color }));
-  Telegram.WebApp.showAlert(`Color ${color} selected!`);
+  if (!container.classList.contains('whiteboard-hidden')) {
+    initCanvas();
+  }
+  Telegram.WebApp.showAlert(`Whiteboard ${container.classList.contains('whiteboard-hidden') ? 'closed' : 'opened'}!`);
 }
 
 function clearWhiteboard() {
