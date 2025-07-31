@@ -67,9 +67,6 @@ input, textarea, select {
   font-size: clamp(12px, 3.5vw, 14px);
   background: #333333;
   color: #ffffff;
-}
-
-select {
   width: 100%;
   max-width: 200px;
   margin: 10px auto;

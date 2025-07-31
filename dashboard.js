@@ -81,7 +81,7 @@ function connectWebSocket() {
     } else if (data.type === 'text') {
       ctx.font = '16px Poppins';
       ctx.fillStyle = data.color;
-      ctx.fillText(data.text, data.x, data.y);
+      wrapText(data.text, data.x, data.y);
     }
   };
   ws.onerror = () => {
@@ -95,6 +95,58 @@ function connectWebSocket() {
 }
 
 connectWebSocket();
+
+// Wrap text to fit canvas
+function wrapText(text, x, y) {
+  ctx.font = '16px Poppins';
+  const maxWidth = canvas.width - x - 10; // 10px padding
+  const lineHeight = 20; // Approximate line height
+  let words = text.split(' ');
+  let line = '';
+  let currentY = y;
+
+  if (currentY < 16) currentY = 16; // Ensure text is not too high
+  if (currentY > canvas.height - 10) {
+    Telegram.WebApp.showAlert('Text cannot be placed outside canvas boundaries.');
+    return;
+  }
+
+  for (let i = 0; i < words.length; i++) {
+    let testLine = line + words[i] + ' ';
+    let testWidth = ctx.measureText(testLine).width;
+    if (testWidth > maxWidth && i > 0) {
+      ctx.fillText(line, x, currentY);
+      line = words[i] + ' ';
+      currentY += lineHeight;
+      if (currentY > canvas.height - 10) {
+        Telegram.WebApp.showAlert('Text truncated to fit canvas.');
+        return;
+      }
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, x, currentY);
+}
+
+// Place text on canvas
+function placeText() {
+  const text = textInput.value.trim();
+  if (text && textX && textY) {
+    const adjustedX = Math.min(textX, canvas.width - 10); // 10px padding
+    if (adjustedX < 0 || textY > canvas.height - 10) {
+      Telegram.WebApp.showAlert('Text cannot be placed outside canvas boundaries.');
+      return;
+    }
+    ctx.fillStyle = currentColor;
+    wrapText(text, adjustedX, textY);
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'text', text, x: adjustedX, y: textY, color: currentColor }));
+    }
+    textInput.value = '';
+    Telegram.WebApp.showAlert('Text added to whiteboard!');
+  }
+}
 
 // Mouse events
 canvas.addEventListener('mousedown', (e) => {
@@ -178,37 +230,10 @@ canvas.addEventListener('touchend', (e) => {
   ctx.closePath();
 }, { passive: false });
 
-// Place text on canvas with boundary check
-function placeText() {
-  const text = textInput.value.trim();
-  if (text && textX && textY) {
-    ctx.font = '16px Poppins';
-    const textWidth = ctx.measureText(text).width;
-    const maxX = canvas.width - textWidth - 10; // 10px padding
-    const maxY = canvas.height - 10; // 10px padding
-    const adjustedX = Math.min(textX, maxX); // Prevent overflow
-    const adjustedY = Math.max(textY, 16); // Ensure text is not too high
-
-    if (adjustedX < 0 || adjustedY > canvas.height) {
-      Telegram.WebApp.showAlert('Text cannot be placed outside canvas boundaries.');
-      return;
-    }
-
-    ctx.fillStyle = currentColor;
-    ctx.fillText(text, adjustedX, adjustedY);
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'text', text, x: adjustedX, y: adjustedY, color: currentColor }));
-    }
-    textInput.value = '';
-    Telegram.WebApp.showAlert('Text added to whiteboard!');
-  }
-}
-
 function toggleWhiteboard() {
   const container = document.getElementById('whiteboard-container');
   container.classList.toggle('whiteboard-hidden');
-  initCanvas(); // Re-init canvas size when toggled
-  Telegram.WebApp.sendData(JSON.stringify({ action: 'open_whiteboard' }));
+  initCanvas(); // Re-init canvas size
   Telegram.WebApp.showAlert('Whiteboard toggled!');
 }
 
