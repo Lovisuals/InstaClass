@@ -1,6 +1,6 @@
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Original Instagram-like gradient */
+  background: linear-gradient(135deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); /* Instagram-like gradient */
   margin: 0;
   padding: 0;
   display: flex;
@@ -60,7 +60,7 @@ p {
   margin-top: 20px;
 }
 
-input {
+input, textarea {
   padding: 10px;
   border: 1px solid #555;
   border-radius: 5px;
@@ -101,6 +101,7 @@ label {
 .whiteboard-tools {
   margin-top: 10px;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
 }
@@ -117,4 +118,9 @@ label {
 
 .tool-button:hover {
   background: #777;
+}
+
+#text-input {
+  width: 200px;
+  margin: 10px auto;
 }

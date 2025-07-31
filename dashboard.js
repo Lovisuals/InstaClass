@@ -7,12 +7,14 @@ const ctx = canvas.getContext('2d');
 let drawing = false;
 let currentColor = 'black';
 let ws;
+let textInput = document.getElementById('text-input');
+let textX, textY;
 
-// Ensure canvas is initialized with white background
+// Initialize canvas with white background
 ctx.fillStyle = '#ffffff';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-// Initialize WebSocket with reconnection logic
+// Initialize WebSocket
 function connectWebSocket() {
   ws = new WebSocket('ws://localhost:8081');
   ws.onopen = () => {
@@ -31,6 +33,10 @@ function connectWebSocket() {
     } else if (data.type === 'clear') {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+    } else if (data.type === 'text') {
+      ctx.font = '16px Poppins';
+      ctx.fillStyle = data.color;
+      ctx.fillText(data.text, data.x, data.y);
     }
   };
   ws.onerror = () => {
@@ -47,10 +53,16 @@ connectWebSocket();
 
 // Mouse events
 canvas.addEventListener('mousedown', (e) => {
-  drawing = true;
   const rect = canvas.getBoundingClientRect();
-  ctx.beginPath();
-  ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+  if (textInput.value) {
+    textX = e.clientX - rect.left;
+    textY = e.clientY - rect.top;
+    placeText();
+  } else {
+    drawing = true;
+    ctx.beginPath();
+    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+  }
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -80,14 +92,20 @@ canvas.addEventListener('mouseout', () => {
   ctx.closePath();
 });
 
-// Touch events for mobile
+// Touch events
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
-  drawing = true;
   const touch = e.touches[0];
   const rect = canvas.getBoundingClientRect();
-  ctx.beginPath();
-  ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+  if (textInput.value) {
+    textX = touch.clientX - rect.left;
+    textY = touch.clientY - rect.top;
+    placeText();
+  } else {
+    drawing = true;
+    ctx.beginPath();
+    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+  }
 }, { passive: false });
 
 canvas.addEventListener('touchmove', (e) => {
@@ -114,6 +132,21 @@ canvas.addEventListener('touchend', (e) => {
   drawing = false;
   ctx.closePath();
 }, { passive: false });
+
+// Place text on canvas
+function placeText() {
+  const text = textInput.value;
+  if (text && textX && textY) {
+    ctx.font = '16px Poppins';
+    ctx.fillStyle = currentColor;
+    ctx.fillText(text, textX, textY);
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'text', text, x: textX, y: textY, color: currentColor }));
+    }
+    textInput.value = '';
+    Telegram.WebApp.showAlert('Text added to whiteboard!');
+  }
+}
 
 function toggleWhiteboard() {
   const container = document.getElementById('whiteboard-container');

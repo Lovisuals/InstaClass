@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>InstaClass Dashboard</title>
   <link rel="stylesheet" href="app.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -17,7 +17,8 @@
       <button class="dashboard-button" id="open-whiteboard" onclick="toggleWhiteboard()">Open/Close Whiteboard</button>
       <button class="dashboard-button" id="chat-assistant" onclick="window.open('https://t.me/InstaClassAssistantBot', '_blank')">Chat with Assistant</button>
       <div id="whiteboard-container" class="whiteboard-hidden">
-        <canvas id="whiteboard" width="600" height="400" aria-label="Interactive whiteboard for drawing"></canvas>
+        <canvas id="whiteboard" width="600" height="400" aria-label="Interactive whiteboard for drawing and notes"></canvas>
+        <textarea id="text-input" placeholder="Type note to add to whiteboard" aria-label="Text input for whiteboard notes"></textarea>
         <div class="whiteboard-tools">
           <button class="tool-button" onclick="setColor('black')">Black</button>
           <button class="tool-button" onclick="setColor('red')">Red</button>
